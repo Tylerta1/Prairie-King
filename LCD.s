@@ -63,8 +63,28 @@ writecommand
 ;5) Read SSI0_SR_R and check bit 4, 
 ;6) If bit 4 is high, loop back to step 5 (wait for BUSY bit to be low)
 
-    
-    
+step1c
+	LDR R1, =SSI0_SR_R
+	LDR R1, [R1]
+	AND R1, R1, #0x10
+	CMP R1, #0x10
+	BEQ step1c
+;clear DC register
+	LDR R1, =DC
+	LDR R2, [R1]
+	AND R2, #DC_COMMAND
+	STR R2, [R1]
+;Write to SSIO_DR_R
+	LDR R3, =SSI0_DR_R
+	STR R0, [R3]
+;Read and check SSIO_SR_R
+step4
+	LDR R1, =SSI0_SR_R
+	LDR R1, [R1]
+	AND R1, R1, #0x10
+	CMP R1, #0x10
+	BEQ step4
+	
     BX  LR                          ;   return
 
 ; This is a helper function that sends an 8-bit data to the LCD.
@@ -77,7 +97,20 @@ writedata
 ;3) Set D/C=PA6 to one
 ;4) Write the 8-bit data to SSI0_DR_R
 
-    
+step1d
+	LDR R1, =SSI0_SR_R
+	LDR R1, [R1]
+	AND R1, R1, #0x02
+	CMP R1, #0x02
+	BNE step1d
+	
+	LDR R1, =DC
+	LDR R2, [R1]
+	ORR R3, R2, #DC_DATA
+	STR R3, [R1]
+;write 8-bit data to SSIO_DR_R
+	LDR R3, =SSI0_DR_R
+	STR R0, [R3]    
     
     BX  LR                          ;   return
 
