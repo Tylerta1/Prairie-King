@@ -1457,14 +1457,11 @@ void char_init(){
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
   Random_Init(1);
-
-  Output_Init();
-  ST7735_FillScreen(0x0000);            // set screen to black
+  Output_Init();						//Initializes screen
 	char_init();
-	Print_Image(&Player);
-	
-  Delay100ms(50);              // delay 5 sec at 80 MHz
   while(1){
+		Print_Image(&Player);
+		Delay100ms(50);              // delay 5 sec at 80 MHz
   }
 
 }
