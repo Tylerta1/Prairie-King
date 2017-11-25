@@ -824,16 +824,35 @@ const uint8_t explosion[2000] = {
 //   128, 128, 128, 128, 128, 125, 125, 125, 125, 125, 125, 129, 125, 125, 125, 125, 125, 123, 120, 125, 
 //   120, 125, 128, 128, 128, 129, 125, 129, 130, 128, 130
 };
-
+struct Sound{
+	const uint8_t *wave;
+	uint32_t size;
+	uint32_t index;
+};
+typedef struct Sound Sound_t;
+Sound_t sound;
 
 void Sound_Init(void){
-// write this
-};
+	sound.wave = shoot;
+	sound.size = 0;
+	sound.index = 0;
+	//DAC_Init();
+	//	Timer0_Init(&UserFunction, 14512);
+}
 void Sound_Play(const uint8_t *pt, uint32_t count){
-// write this
+	sound.wave = pt;
+	sound.size = count;
+	sound.index = 0;
 };
+void UserFunction(void){
+	//GPIO_PORTF_DATA_R ^= 0x02;
+	//DAC_Out(sound.wave[sound.index]);
+	if(sound.index < sound.size){
+		sound.index++;
+	}
+}
 void Sound_Shoot(void){
-// write this
+	Sound_Play(shoot,4080);
 };
 void Sound_Killed(void){
 // write this
