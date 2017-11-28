@@ -1441,7 +1441,7 @@ const unsigned short LeftEnemy[] = {
 
 };
 
-const unsigned short Bullet[] = {
+const unsigned short Sprite_Bullet[] = {
  0x55FD, 0x55FD, 0x55FD, 0x561D, 0x563E, 0x563E, 0x55FD, 0x55FD, 0x55FD, 0x55FD, 0x55FD, 0x561D, 0x4D39, 0x4C78, 0x4CB8, 0x55DC,
  0x55FD, 0x55FD, 0x55FD, 0x55DC, 0x563E, 0x43D4, 0x18A8, 0x21CC, 0x55BB, 0x55FD, 0x55FD, 0x55FD, 0x55BC, 0x3AF1, 0x42CD, 0x3B2C,
  0x332C, 0x326D, 0x4C77, 0x563E, 0x55FD, 0x55DD, 0x218B, 0x2A49, 0x244C, 0x34AF, 0x1927, 0x43F5, 0x565E, 0x55FD, 0x55BC, 0x3311,
@@ -1550,7 +1550,7 @@ PlayerShip0 - Player's ship
 SmallEnemy10point - Enemy
 	width = 16
 	height = 10
-Bullet
+Sprite_Bullet
 	width = 9
 	height = 9
 LeftEnemy - Left foot forward of enemy
@@ -1609,7 +1609,7 @@ void char_init(){
 	Player.images[0] = Sprite_Player;
 }
 void bullet_init(){
-	Bullet.image[0] = Bullet;
+	Bullet.image[0] = Sprite_Bullet;
 }
 void enemy_init(){
 	Enemy.alive = 1;
@@ -1618,8 +1618,8 @@ void enemy_init(){
 	Enemy.ypos = 40;
 	Enemy.height = 24;
 	Enemy.width = 24;
-	Enemy.images[0] = EnemyLeft;
-	Enemy.images[1] = EnemyRight;
+	Enemy.images[0] = LeftEnemy;
+	Enemy.images[1] = RightEnemy;
 }
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
@@ -1633,7 +1633,7 @@ int main(void){
 	enemy_init();
 	
 	ST7735_DrawBitmap(0,160,Map,128,160);
-	ST7735_DrawBitmap(30,120,Bullet,9,9);
+	ST7735_DrawBitmap(30,120,Sprite_Bullet,9,9);
 	ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
 	ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
 	ST7735_DrawBitmap(20, 80,Sprite_Player,24,24);
@@ -1660,11 +1660,34 @@ int main(void){
 	
 	***************************************************************************/
   while(1){
+		/*
 		if(Player.xpos >= 8 && Player.xpos <= 96 && Player.ypos >= 34 && Player.ypos <= 150){
-			Move_char(&Player);
+			Move_Char(&Player);
 			Print_Image(&Player);
-		}            // delay 5 sec at 80 MHz
+		}
+		*/
+		/*
+		while(Player.xpos < 96){
+			Player.xpos +=1;
+			Print_Image(&Player);
+		}
+		while(Player.xpos > 8){
+			Player.xpos -= 1;
+			Print_Image(&Player);
+		}
+		*/
+		while(Player.ypos > 34){
+			Player.ypos -= 1;
+			Player.xpos -= 1;
+			Print_Image(&Player);
+		}
+		while(Player.ypos < 150){
+			Player.ypos += 1;
+			Player.xpos += 1;
+			Print_Image(&Player);
+		}
   }
+	
 
 }
 
