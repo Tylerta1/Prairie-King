@@ -1437,6 +1437,11 @@ struct Bullet{
 typedef struct Character Character_t;
 Character_t Player;
 typedef struct Bullet Bullet_t;
+
+
+void Move_Char(Character_t *character){
+	character->xpos += 1;
+}
 	
 void Print_Image(Character_t *character){
 	ST7735_DrawBitmap(character->xpos, character->ypos, character->images[character->direction], character->width, character->height);
@@ -1461,6 +1466,7 @@ int main(void){
 	char_init();
   while(1){
 		Print_Image(&Player);
+		Move_Char(&Player);
 		Delay100ms(50);              // delay 5 sec at 80 MHz
   }
 
