@@ -1611,7 +1611,7 @@ void char_init(){
 void bullet_init(){
 	Bullet.image[0] = Bullet;
 }
-void enemy_int(){
+void enemy_init(){
 	Enemy.alive = 1;
 	Enemy.direction = 0;
 	Enemy.xpos = 30;
@@ -1625,14 +1625,45 @@ int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
   Random_Init(1);
   Output_Init();						//Initializes screen
+	//Sound_Init() // initializes DAC and sets up sound struct
+	Random_Init(NVIC_ST_CURRENT_R);
+	
 	char_init();
+	bullet_init();
+	enemy_init();
+	
 	ST7735_DrawBitmap(0,160,Map,128,160);
 	ST7735_DrawBitmap(30,120,Bullet,9,9);
 	ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
 	ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
 	ST7735_DrawBitmap(20, 80,Sprite_Player,24,24);
+	
+	/***************************************************************************
+																		BOUNDARIES
+	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
+	([0-128],[0-10]) 
+	([0-128],[150-160])
+	([0-8],[0-160])
+	([120-128],[0-160])
+	
+	FOR 24x24
+		MINIMUM X: 8
+		MAX X: 96
+		MINIMUM Y: 34
+		MAX Y: 150
+	
+	FOR 9X9
+		MINIMUM X: 8
+		MAX X:111 
+		MINIMUM Y: 19
+		MAX Y: 150
+	
+	***************************************************************************/
   while(1){
-		Delay100ms(50);              // delay 5 sec at 80 MHz
+		if(Player.xpos >= 8 && Player.xpos <= 96 && Player.ypos >= 34 && Player.ypos <= 150){
+			Move_char(&Player);
+			Print_Image(&Player);
+		}            // delay 5 sec at 80 MHz
   }
 
 }
