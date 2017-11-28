@@ -1452,7 +1452,7 @@ const unsigned short Bullet[] = {
 };
 
 
-const unsigned short Main_Player[] = {
+const unsigned short Sprite_Player[] = {
  0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE,
  0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE,
  0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x555D, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE,
@@ -1551,8 +1551,8 @@ SmallEnemy10point - Enemy
 	width = 16
 	height = 10
 Bullet
-	width = 3
-	height = 3
+	width = 9
+	height = 9
 LeftEnemy - Left foot forward of enemy
 	width = 24
 	height = 24
@@ -1576,16 +1576,17 @@ struct Character{
 };
 
 struct Bullet{
-	const uint16_t *image[1];
-	int16_t xpos;
-	int16_t ypos;
+	const uint16_t *image[1]; // What to print
+	int16_t xpos; //Where to print on x-coordinate
+	int16_t ypos; //Where to print on y-coordinate
 	uint8_t width;  //how big the image is
 	uint8_t height; // ^
 };
 typedef struct Character Character_t;
 Character_t Player;
+Character_t Enemy;
 typedef struct Bullet Bullet_t;
-
+Bullet_t Bullet;
 
 void Move_Char(Character_t *character){
 	character->xpos += 1;
@@ -1601,11 +1602,24 @@ void Print_Bullet(Bullet_t *bullet){
 void char_init(){ 
 	Player.alive = 1;
 	Player.direction = 0;
-	Player.xpos = 0;
+	Player.xpos = 50;
 	Player.ypos = 80;
-	Player.height = 8;
-	Player.width = 18;
-	Player.images[0] = PlayerShip0;
+	Player.height = 24;
+	Player.width = 24;
+	Player.images[0] = Sprite_Player;
+}
+void bullet_init(){
+	Bullet.image[0] = Bullet;
+}
+void enemy_int(){
+	Enemy.alive = 1;
+	Enemy.direction = 0;
+	Enemy.xpos = 30;
+	Enemy.ypos = 40;
+	Enemy.height = 24;
+	Enemy.width = 24;
+	Enemy.images[0] = EnemyLeft;
+	Enemy.images[1] = EnemyRight;
 }
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
@@ -1613,10 +1627,10 @@ int main(void){
   Output_Init();						//Initializes screen
 	char_init();
 	ST7735_DrawBitmap(0,160,Map,128,160);
-	ST7735_DrawBitmap(30,60,Bullet,3,3);
+	ST7735_DrawBitmap(30,120,Bullet,9,9);
 	ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
 	ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
-	ST7735_DrawBitmap(20, 80,Main_Player,24,24);
+	ST7735_DrawBitmap(20, 80,Sprite_Player,24,24);
   while(1){
 		Delay100ms(50);              // delay 5 sec at 80 MHz
   }
