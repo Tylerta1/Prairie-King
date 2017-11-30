@@ -832,25 +832,26 @@ struct Sound{
 typedef struct Sound Sound_t;
 Sound_t sound;
 
+void UserFunction(void){
+	//GPIO_PORTF_DATA_R ^= 0x02;
+	DAC_Out(sound.wave[sound.index]);
+	if(sound.index < sound.size){
+		sound.index++;
+	}
+}
 void Sound_Init(void){
 	sound.wave = shoot;
 	sound.size = 0;
 	sound.index = 0;
-	//DAC_Init();
-	//	Timer0_Init(&UserFunction, 14512);
+	DAC_Init();
+	//Timer0_Init(&UserFunction, 14512);
 }
 void Sound_Play(const uint8_t *pt, uint32_t count){
 	sound.wave = pt;
 	sound.size = count;
 	sound.index = 0;
 };
-void UserFunction(void){
-	//GPIO_PORTF_DATA_R ^= 0x02;
-	//DAC_Out(sound.wave[sound.index]);
-	if(sound.index < sound.size){
-		sound.index++;
-	}
-}
+
 void Sound_Shoot(void){
 	Sound_Play(shoot,4080);
 };
