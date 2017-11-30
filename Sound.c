@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "Sound.h"
 #include "DAC.h"
+#include "Timer0.c"
 
 const uint8_t shoot[4080] = {
   129, 99, 103, 164, 214, 129, 31, 105, 204, 118, 55, 92, 140, 225, 152, 61, 84, 154, 184, 101, 
@@ -844,7 +845,7 @@ void Sound_Init(void){
 	sound.size = 0;
 	sound.index = 0;
 	DAC_Init();
-	//Timer0_Init(&UserFunction, 14512);
+	Timer0_Init(&UserFunction, 14512);
 }
 void Sound_Play(const uint8_t *pt, uint32_t count){
 	sound.wave = pt;
