@@ -2801,7 +2801,10 @@ Sprite_PlayerDown
 	height = 24
 *****************************************************************************/
 
-
+int UP = 4;
+int DOWN = 3;
+int LEFT = 2;
+int RIGHT = 1;
 // Gonna use Port A for shooting probably, but testing movement with it first
 void PortA_Init(void){
 	SYSCTL_RCGCGPIO_R |= 0x01; //Port A clock turned on
@@ -2891,8 +2894,20 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
-void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with charcter2
-	character->xpos
+void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with charcter2
+	int botleft = character->xpos; // On a coordinate, this is the bottom left pixel of the sprite
+	int botright = character->xpos+character->width-1;
+	int topline = (character->ypos) - (character->height) + 1; //
+	int topright = character->ypos-character->height+character->width-1;
+	
+	int top = (character2->ypos) - (character2->height)+ 1 ;
+	int bot = (character2->xpos);
+	
+	if(direction == UP){
+		if(topline + move <=  character2->ypos){
+			
+		}
+	}
 }
 void LCD_RemoveChar(Character_t *character){
 	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
