@@ -2891,8 +2891,8 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
-void collision(void){
-	
+void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with charcter2
+	character->xpos
 }
 void LCD_RemoveChar(Character_t *character){
 	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
@@ -2960,7 +2960,7 @@ int main(void){
 		Print_Char(&Player);
 		Delay100ms(1);
 
-		*/
+		
 		/****************************************************************
 					Main Engine Brainstorm
 		
