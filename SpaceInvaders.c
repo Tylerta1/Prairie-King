@@ -64,7 +64,8 @@ PORTS USED:
 #include "ADC.h"
 #include "sound.h"
 #include "Sprite.h"
-
+#include "Timer1.h"
+#include "Timer0.h"
 
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -2800,7 +2801,27 @@ Sprite_PlayerDown
 	width = 24
 	height = 24
 *****************************************************************************/
-
+	/***************************************************************************
+																		BOUNDARIES
+	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
+	([0-128],[0-10]) 
+	([0-128],[150-160])
+	([0-8],[0-160])
+	([120-128],[0-160])
+	
+	FOR 24x24
+		MINIMUM X: 8
+		MAX X: 96
+		MINIMUM Y: 34
+		MAX Y: 150
+	
+	FOR 9X9
+		MINIMUM X: 8
+		MAX X:111 
+		MINIMUM Y: 19
+		MAX Y: 150
+	
+	***************************************************************************/
 int UP = 4;
 int DOWN = 3;
 int LEFT = 2;
@@ -2844,7 +2865,7 @@ Character_t Enemy;   //Struct of an Enemy
 Bullet_t Bullet;		//Struct of Bullet
 int new_move; 
 
-
+/* THIS IS FOR TEST. NOT ACTUAL MOVE_CHAR FUNCTION
 void Move_Char(Character_t *character){
 	if(GPIO_PORTA_DATA_R&&0x01 == 0x01){
 		character->xpos += 1;
@@ -2861,14 +2882,19 @@ void Move_Char(Character_t *character){
 	new_move = 0;
 	
 }
-	
+*/
 void Print_Char(Character_t *character){
 	ST7735_DrawBitmap(character->xpos, character->ypos, character->images[character->direction], character->width, character->height);
 };
 void Print_Bullet(Bullet_t *bullet){
 	ST7735_DrawBitmap(bullet->xpos, bullet->ypos, bullet->image[0], bullet->width, bullet->height);
 };
-
+void LCD_RemoveChar(Character_t *character){
+	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
+}
+void LCD_RemoveBullet(Bullet_t *bullet){
+	ST7735_FillRect(bullet->xpos, bullet->ypos, bullet->width, bullet->height, 0x55FE);
+}
 void char_init(){ 
 	Player.alive = 1;
 	Player.direction = 0;
@@ -2894,26 +2920,56 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
-void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with charcter2
-	int botleft = character->xpos; // On a coordinate, this is the bottom left pixel of the sprite
-	int botright = character->xpos+character->width-1;
-	int topline = (character->ypos) - (character->height) + 1; //
-	int topright = character->ypos-character->height+character->width-1;
+//2 characters to compare, one's moving
+void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with character2
+	int leftline = (character->xpos); //left line. x = xpos
+	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
+	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
+	int botline = (character->ypos);                           // y = ypos
 	
-	int top = (character2->ypos) - (character2->height)+ 1 ;
-	int bot = (character2->xpos);
+	//same for 2nd char
+	int topline2 = (character2->ypos) - (character2->height)+ 1 ;
+	int botline2 = (character2->ypos);
+	int leftline2 = (character2->xpos);
+	int rightline2 = (character2->xpos) + (character->width) - 1;
+	
 	
 	if(direction == UP){
-		if(topline + move <=  character2->ypos){
-			
+		if(topline - move <=  botline2){
+			if(rightline >= leftline2 && leftline <= rightline2){
+				//collided
+			}
+		}
+	}
+	if(direction == DOWN){
+		if(botline + move >= topline2){
+			if(rightline >= leftline2 && leftline <= rightline2){
+				//collided
+			}
+		}
+	}
+	if(direction == LEFT){
+		if(leftline - move <= rightline2){
+			if(topline <= botline2 && botline >= topline2){
+				//collided
+			}
+		}
+	}
+	if(direction == RIGHT){
+		if(rightline + move>= leftline2){
+			if(topline <= botline2 && botline >= topline2){
+				//collided
+			}
 		}
 	}
 }
-void LCD_RemoveChar(Character_t *character){
-	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
-}
-void LCD_RemoveBullet(Bullet_t *bullet){
-	ST7735_FillRect(bullet->xpos, bullet->ypos, bullet->width, bullet->height, 0x55FE);
+int ADCStatus1 = 0;
+int ADCStatus2 = 0;
+int Move[4] = {0,0,0,0};
+void Joy_In(void){
+	ADC_In(Move);
+	ADCStatus1 = 1;
+	ADCStatus2 = 1;
 }
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
@@ -2921,7 +2977,8 @@ int main(void){
   Output_Init();						//Initializes screen
 	//Sound_Init() // initializes DAC and sets up sound struct
 	Random_Init(NVIC_ST_CURRENT_R);
-	
+	ADC_Init();
+	Timer1_Init(&Joy_In, 2000000);
 	char_init();
 	bullet_init();
 	enemy_init();
@@ -2933,27 +2990,7 @@ int main(void){
 	ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
 	ST7735_DrawBitmap(20, 80,Sprite_PlayerDown,24,24);
 	
-	/***************************************************************************
-																		BOUNDARIES
-	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
-	([0-128],[0-10]) 
-	([0-128],[150-160])
-	([0-8],[0-160])
-	([120-128],[0-160])
-	
-	FOR 24x24
-		MINIMUM X: 8
-		MAX X: 96
-		MINIMUM Y: 34
-		MAX Y: 150
-	
-	FOR 9X9
-		MINIMUM X: 8
-		MAX X:111 
-		MINIMUM Y: 19
-		MAX Y: 150
-	
-	***************************************************************************/
+
   while(1){
 		/*
 		while(Player.xpos < 96){
@@ -2964,7 +3001,6 @@ int main(void){
 			Player.xpos -= 1;
 			Print_Image(&Player);
 		}
-		*/
 		if(GPIO_PORTA_DATA_R&&0x0F != 0x00){
 			new_move = 1;
 		}
@@ -2974,7 +3010,7 @@ int main(void){
 		
 		Print_Char(&Player);
 		Delay100ms(1);
-
+		*/
 		
 		/****************************************************************
 					Main Engine Brainstorm
@@ -3022,7 +3058,115 @@ int main(void){
 
 
 // You can use this timer only if you learn how it works
+/**********************************************************************
+other functions I wanna implement but this file is getting too damn long
 
+uint8_t Input_EnemyMove(Character_t *enemy, Character_t *player1){
+	int16_t hor;
+	int16_t ver;
+	
+	//if the enemy is still coming in from the outside, then they should continue to move in the same direction until they are completely in
+	if(enemy->xpos < 0){
+		return RIGHT;
+	}
+	if(enemy->xpos > 160-enemy->width){
+		return LEFT;
+	}
+	if(enemy->ypos < 15+enemy->height){
+		return DOWN;
+	}
+	if(enemy->ypos > 128){
+		return UP;
+	}
+	
+	if(player1->alive){
+		hor = enemy->xpos - player1->xpos;
+		ver = enemy->ypos - player1->ypos;
+	}
+
+	if(hor > -5 && hor < 5 && ver < 0){
+		return DOWN;
+	}
+	if(hor > -5 && hor < 5 && ver > 0){
+		return UP;
+	}
+	if(hor > 0 && ver > -8 && ver < 8){
+		return LEFT;
+	}
+	if(hor < 0 && ver > -8 && ver < 8){
+		return RIGHT;
+	}
+	if(hor < 0 && ver < 0){
+		return DOWNRIGHT;
+	}
+	if(hor > 0 && ver < 0){
+		return DOWNLEFT;
+	}
+	if(hor < 0 && ver > 0){
+		return UPRIGHT;
+	}
+	if(hor > 0 && ver > 0){
+		return UPLEFT;
+	}
+	else{
+		return NOTHING;
+	}
+}
+uint8_t PlayerMove(void){
+	
+	while(ADCStatus1 == 0){};
+	ADCStatus1 = 0;
+	//Move[0] - P1 Horizontal
+	//Move[1] - P1 Vertical
+	if(Move[0] < 1250){
+		if(Move[1] < 1250){
+			return DOWNRIGHT;
+		}
+		if(Move[1] >2850){
+			return UPRIGHT;
+		}
+		else{
+			return RIGHT;
+		}
+	}
+	if(Move[0] > 2850){
+		if(Move[1] <1250){
+			return DOWNLEFT;
+		}
+		if(Move[1] > 2850){
+			return UPLEFT;
+		}
+		else{
+			return LEFT;
+		}
+	}
+	if(Move[1] < 1250){
+		if(Move[0] < 1250){
+			return DOWNRIGHT;
+		}
+		if(Move[0] > 2850){
+			return DOWNLEFT;
+		}
+		else{
+			return DOWN;
+		}
+	}
+	if(Move[1] > 2850){
+		if(Move[0] < 1250){
+			return UPRIGHT;
+		}
+		if(Move[0] > 2850){
+			return UPLEFT;
+		}
+		else{
+			return UP;
+		}
+	}
+	else{
+		return NOTHING;
+	}
+}
+**************************************************************************************/
 void Delay100ms(uint32_t count){uint32_t volatile time;
   while(count>0){
     time = 727240;  // 0.1sec at 80 MHz
