@@ -47,16 +47,14 @@ void ADC_Init(void){
 // Busy-wait Analog to digital conversion
 // Input: none
 // Output: 12-bit result of ADC conversion
-void ADC_In(int *data){  
+uint32_t ADC_In(void){  
+	uint32_t data;
 	ADC0_PSSI_R = 0x0008; //start ADC
 	while((ADC0_RIS_R&0x08) == 0){ //busy-wait
 	};
-	data[0] = ADC0_SSFIFO3_R&0xFFF; // read data, PE4, data[0] has horizontal or vertical, TBD
+	data = ADC0_SSFIFO3_R&0xFFF; // read data
 	ADC0_ISC_R = 0x0008; //clear flag
-	while((ADC0_RIS_R&0x04) == 0){ //busy-wait
-	};
-	data[1] = ADC0_SSFIFO2_R&0xFFF; // read data, PE3, data[1] has horizontal or vertical, TBD
-	ADC0_ISC_R = 0x0004; //clear flag
+  return data; //return data
 }
 
 

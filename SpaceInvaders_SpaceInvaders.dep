@@ -21,7 +21,7 @@ I (Timer0.c)(0x5A177067)
 I (tm4c123gh6pm.h)(0x5A16571B)
 F (.\LCD.s)(0x5A18F7BD)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\CMSIS\Include"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\Inc\Luminary"--list .\lcd.lst --xref -o .\lcd.o --depend .\lcd.d)
 F (.\Print.s)(0x5A16571B)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\CMSIS\Include"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\Inc\Luminary"--list .\print.lst --xref -o .\print.o --depend .\print.d)
-F (.\SpaceInvaders.c)(0x5A20F43A)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --C99-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\CMSIS\Include"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\Inc\Luminary"-Drvmdk -DPART_LM4F120H5QR-o .\spaceinvaders.o --omf_browse .\spaceinvaders.crf --depend .\spaceinvaders.d)
+F (.\SpaceInvaders.c)(0x5A206AB9)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\.. --C99-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\CMSIS\Include"-I "C:\Users\Alex\Desktop\EE 319K - Ta\ARM\Inc\Luminary"-Drvmdk -DPART_LM4F120H5QR-o .\spaceinvaders.o --omf_browse .\spaceinvaders.crf --depend .\spaceinvaders.d)
 I (C:\Users\Alex\Desktop\EE 319K - Ta\ARM\ARMCC\include\stdint.h)(0x51C86E14)
 I (tm4c123gh6pm.h)(0x5A16571B)
 I (ST7735.h)(0x5A16571B)
