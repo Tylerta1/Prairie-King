@@ -2801,6 +2801,7 @@ Sprite_PlayerDown
 	width = 24
 	height = 24
 *****************************************************************************/
+<<<<<<< HEAD
 	/***************************************************************************
 																		BOUNDARIES
 	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
@@ -2826,6 +2827,10 @@ int UP = 4;
 int DOWN = 3;
 int LEFT = 2;
 int RIGHT = 1;
+=======
+
+
+>>>>>>> parent of 946f8fb... 2e2
 // Gonna use Port A for shooting probably, but testing movement with it first
 void PortA_Init(void){
 	SYSCTL_RCGCGPIO_R |= 0x01; //Port A clock turned on
@@ -2920,6 +2925,7 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
+<<<<<<< HEAD
 //2 characters to compare, one's moving
 void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with character2
 	int leftline = (character->xpos); //left line. x = xpos
@@ -2962,6 +2968,10 @@ void enemy_collision(Character_t *character, Character_t *character2, int move, 
 			}
 		}
 	}
+=======
+void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with charcter2
+	character->xpos
+>>>>>>> parent of 946f8fb... 2e2
 }
 int ADCStatus1 = 0;
 int ADCStatus2 = 0;
