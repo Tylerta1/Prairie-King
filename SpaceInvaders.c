@@ -2707,8 +2707,6 @@ const unsigned short Sprite_Bullet[] = {
 
 
 
-
-
 const unsigned short Sprite_PlayerDown[] = {
  0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE,
  0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE, 0x55FE,
@@ -3039,35 +3037,43 @@ void Move_Bullets(void){
 	for(int i=0; i<10; i++){
 		if(Bullets[i].alive==1){
 			if(Bullets[i].direction==0){		//down
-				if(Bullets[i].ypos==148){
+				if(Bullets[i].ypos<=148){
 					Bullets[i].alive=0;
 					LCD_RemoveBullet(&Bullets[i]);
 				}
-				Bullets[i].ypos=(Bullets[i].ypos+1);
-				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				else{
+					Bullets[i].ypos=(Bullets[i].ypos+1);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				}
 			}
 			if(Bullets[i].direction==1){		//right
-				if(Bullets[i].xpos==100){
+				if(Bullets[i].xpos>=100){
 					Bullets[i].alive=0;
 					LCD_RemoveBullet(&Bullets[i]);
 				}
-				Bullets[i].xpos=(Bullets[i].xpos+1);
-				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				else{
+					Bullets[i].xpos=(Bullets[i].xpos+1);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				}
 			}		
 			if(Bullets[i].direction==2){		//up
-				if(Bullets[i].ypos==19){
+				if(Bullets[i].ypos<=19){
 					Bullets[i].alive=0;
 				}
-				Bullets[i].ypos=(Bullets[i].ypos-1);
-				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				else{
+					Bullets[i].ypos=(Bullets[i].ypos-1);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				}
 			}
 			if(Bullets[i].direction==3){		//left
-				if(Bullets[i].xpos==9){
+				if(Bullets[i].xpos<=9){
 					Bullets[i].alive=0;
 					LCD_RemoveBullet(&Bullets[i]);
 				}
-				Bullets[i].xpos=(Bullets[i].xpos-1);
-				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				else{
+					Bullets[i].xpos=(Bullets[i].xpos-1);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+				}
 			}
 		}
 	}
@@ -3154,17 +3160,18 @@ void Move_Enemies (void){
 			if((Enemies[i].ypos==34)||(Enemies[i].ypos==150)||(Enemies[i].xpos==8)||(Enemies[i].xpos==96)){		//check for collision with any wall
 					Enemies[i].alive=0;
 					LCD_RemoveChar(&Enemies[i]);
-				}
-			ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
+			}
+			else{
+				ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
+			}
 		}
 	}
 }
 uint8_t Input_PlayerMove(void){
-	
+	//Move[0] - Horizontal
+	//Move[1] - Vertical
 	while(ADCStatus == 0){};
 	ADCStatus = 0;
-	//Move[0] - P1 Horizontal
-	//Move[1] - P1 Vertical
 	if(Move[0] > 0xE00){
 		if(Move[1] < 0x550){
 			return DOWNRIGHT;
@@ -3294,9 +3301,8 @@ int main(void){
 	while(1){
 		Check_Gun_Buttons();
 		Move_Bullets();
-		ST7735_FillRect(Bullet.xpos, Bullet.ypos, Bullet.width, Bullet.height, 0x55FE);
-		//Spawn_Enemies();
-		//Move_Enemies();
+		Spawn_Enemies();
+		Move_Enemies();
 		PlayerMove();
 		Print_Char(&Player);
 
