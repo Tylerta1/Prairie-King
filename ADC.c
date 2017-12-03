@@ -16,7 +16,7 @@ ADC0 - ONE JOYSTICK THAT READS 2 INPUTS
 // Input: none
 // Output: none
 // For Joystick, let
-void ADC_Init(void){
+void ADC_Init(void){ 
 	SYSCTL_RCGCGPIO_R |= 0x10;      // 1) activate clock for Port E 
   while((SYSCTL_PRGPIO_R&0x10) == 0){};
   GPIO_PORTE_DIR_R &= ~0x0F;      // 2) make PE0-3 input
@@ -28,7 +28,12 @@ void ADC_Init(void){
   delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
   delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
   delay = SYSCTL_RCGCADC_R;
-		
+  delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
+  delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
+  delay = SYSCTL_RCGCADC_R;
+  delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
+  delay = SYSCTL_RCGCADC_R;       // extra time to stabilize
+  delay = SYSCTL_RCGCADC_R;
 		
 		
   ADC1_PC_R = 0x01;               // 7) configure for 125K 
@@ -42,18 +47,6 @@ void ADC_Init(void){
   ADC1_IM_R &= ~0x000C;           // 13) disable SS2-SS3 interrupts
   ADC1_ACTSS_R |= 0x000C;         // 14) enable sample sequencer 2-3
 
-		
-	ADC0_PC_R = 0x01;               // 7) configure for 125K 
-  ADC0_SSPRI_R = 0x0123;          // 8) Seq 3 is highest priority
-  ADC0_ACTSS_R &= ~0x000C;        // 9) disable sample sequencer 2-3
-  ADC0_EMUX_R &= ~0xFF00;         // 10) seq2 is software trigger
- 	ADC0_SSMUX3_R = (ADC0_SSMUX3_R&0xFFFFFFF0)+2;  // 11) Ain2(PE1)
-	ADC0_SSMUX2_R = (ADC0_SSMUX2_R&0xFFFFFFF0)+3;  // 11) Ain3(PE0)
-	ADC0_SSCTL2_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
-	ADC0_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
-  ADC0_IM_R &= ~0x000C;           // 13) disable SS2-SS3 interrupts
-  ADC0_ACTSS_R |= 0x000C;         // 14) enable sample sequencer 2-3
-
 }
 
 //------------ADC_In------------
@@ -61,15 +54,13 @@ void ADC_Init(void){
 // Input: none
 // Output: 12-bit result of ADC conversion
 void ADC_In(int *data){  
-	ADC0_PSSI_R = 0x0008; //start ADC
-	while((ADC0_RIS_R&0x08) == 0){ //busy-wait
-	};
-	data[0] = ADC0_SSFIFO3_R&0xFFF; // read data, PE4, data[0] has horizontal or vertical, TBD
-	ADC0_ISC_R = 0x0008; //clear flag
-	while((ADC0_RIS_R&0x04) == 0){ //busy-wait
-	};
-	data[1] = ADC0_SSFIFO2_R&0xFFF; // read data, PE3, data[1] has horizontal or vertical, TBD
-	ADC0_ISC_R = 0x0004; //clear flag
+  ADC1_PSSI_R = 0x000C;  
+  while((ADC1_RIS_R&0x04)==0){};//data[0] = PE2 - P1 Horizontal
+	data[0] = ADC1_SSFIFO2_R&0xFFF;
+  ADC1_ISC_R = 0x0004; 
+	while((ADC1_RIS_R&0x08)==0){};//data[1] = PE3 - P1 Vertical
+	data[1] =  ADC1_SSFIFO3_R&0xFFF;
+	ADC1_ISC_R = 0x0008; 
 }
 
 
