@@ -2840,7 +2840,7 @@ int UPLEFT = 5;
 int DOWNRIGHT = 6;
 int DOWNLEFT = 7;
 int STAY = 8;
-int ADCStatus1 = 0;
+int ADCStatus = 0;
 int Move[2] = {0,0};
 
 
@@ -3157,8 +3157,8 @@ void Move_Enemies (void){
 }
 uint8_t Input_PlayerMove(void){
 	
-	while(ADCStatus1 == 0){};
-	ADCStatus1 = 0;
+	while(ADCStatus == 0){};
+	ADCStatus = 0;
 	//Move[0] - P1 Horizontal
 	//Move[1] - P1 Vertical
 	if(Move[0] > 0xE00){
@@ -3213,7 +3213,7 @@ uint8_t Input_PlayerMove(void){
 //left - 0 for Move[0]
 void Input_Joystick(void){
 	ADC_In(Move);
-	ADCStatus1 = 1;
+	ADCStatus = 1;
 }
 void PlayerMove(void){
 	int move = Input_PlayerMove();
@@ -3275,7 +3275,7 @@ int main(void){
   Output_Init();						//Initializes screen
 //	Sound_Init(); // initializes DAC and sets up sound struct
 	ADC_Init();
-//	Timer1_Init(&Joy_In, 2000000);
+	Timer1_Init(&Input_Joystick, 8000000);
 	Random_Init(1);
 	Random_Init(NVIC_ST_CURRENT_R );
 	char_init();
@@ -3293,9 +3293,9 @@ int main(void){
 		ST7735_FillRect(Bullet.xpos, Bullet.ypos, Bullet.width, Bullet.height, 0x55FE);
 		//Spawn_Enemies();
 		//Move_Enemies();
-		Input_Joystick();
 		PlayerMove();
 		Print_Char(&Player);
+
 	}
 	
 
