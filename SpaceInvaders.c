@@ -3161,44 +3161,44 @@ uint8_t Input_PlayerMove(void){
 	ADCStatus1 = 0;
 	//Move[0] - P1 Horizontal
 	//Move[1] - P1 Vertical
-	if(Move[0] > 0x800){
-		if(Move[1] < 0x750){
+	if(Move[0] > 0xE00){
+		if(Move[1] < 0x550){
 			return DOWNRIGHT;
 		}
-		if(Move[1] > 0x800){
+		if(Move[1] > 0xE00){
 			return UPRIGHT;
 		}
 		else{
 			return RIGHT;
 		}
 	}
-	if(Move[0] < 0x750 ){
-		if(Move[1] < 0x750){
+	if(Move[0] < 0x550 ){
+		if(Move[1] < 0x550){
 			return DOWNLEFT;
 		}
-		if(Move[1] > 0x800){
+		if(Move[1] > 0xE00){
 			return UPLEFT;
 		}
 		else{
 			return LEFT;
 		}
 	}
-	if(Move[1] < 0x750){
-		if(Move[0] > 0x800){
+	if(Move[1] < 0x550){
+		if(Move[0] > 0xE00){
 			return DOWNRIGHT;
 		}
-		if(Move[0] < 0x750){
+		if(Move[0] < 0x550){
 			return DOWNLEFT;
 		}
 		else{
 			return DOWN;
 		}
 	}
-	if(Move[1] > 0x800){
-		if(Move[0] > 0x800){
+	if(Move[1] > 0xE00){
+		if(Move[0] > 0xE00){
 			return UPRIGHT;
 		}
-		if(Move[0] < 0x750){
+		if(Move[0] < 0x550){
 			return UPLEFT;
 		}
 		else{
@@ -3238,34 +3238,34 @@ void PlayerMove(void){
 		}
 	}
 	if( move == UPLEFT){
-		if( Player.ypos < 150 && Player.ypos > 34){
-			Player.ypos -= 1;
-		}
-		if( Player.xpos > 8 && Player.xpos < 96){
+		if( Player.xpos > 8 && Player.xpos <= 96){
 			Player.xpos -= 1;
+		}
+		if( Player.ypos <= 150 && Player.ypos > 34){
+			Player.ypos -= 1;
 		}
 	}
 	if( move == DOWNLEFT){
-		if( Player.ypos < 150 && Player.ypos > 34){
-			Player.ypos += 1;
-		}
-		if( Player.xpos > 8 && Player.ypos < 96){
+		if( Player.xpos > 8 && Player.xpos <= 96){
 			Player.xpos -= 1;
+		}
+		if( Player.ypos < 150 && Player.ypos >= 34){
+			Player.ypos += 1;
 		}
 	}
 	if( move == UPRIGHT){
-		if( Player.xpos > 8 && Player.xpos < 96){
+		if( Player.xpos >= 8 && Player.xpos < 96){
 			Player.xpos += 1;
 		}
-		if( Player.ypos < 150 && Player.ypos > 34){
+		if( Player.ypos <= 150 && Player.ypos > 34){
 			Player.ypos -= 1;
 		}
 	}
 	if( move == DOWNRIGHT){
-		if( Player.xpos < 8 && Player.xpos > 96){
+		if( Player.xpos >= 8 && Player.xpos < 96){
 			Player.xpos += 1;
 		}
-		if( Player.ypos < 150 && Player.ypos > 34){
+		if( Player.ypos < 150 && Player.ypos >= 34){
 			Player.ypos += 1;
 		}
 	}
@@ -3291,8 +3291,8 @@ int main(void){
 		Check_Gun_Buttons();
 		Move_Bullets();
 		ST7735_FillRect(Bullet.xpos, Bullet.ypos, Bullet.width, Bullet.height, 0x55FE);
-		Spawn_Enemies();
-		Move_Enemies();
+		//Spawn_Enemies();
+		//Move_Enemies();
 		Input_Joystick();
 		PlayerMove();
 		Print_Char(&Player);
