@@ -7,3 +7,5 @@
 .\spaceinvaders.o: ADC.h
 .\spaceinvaders.o: sound.h
 .\spaceinvaders.o: Sprite.h
+.\spaceinvaders.o: Timer1.h
+.\spaceinvaders.o: Timer0.h

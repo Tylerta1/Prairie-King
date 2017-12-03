@@ -3,7 +3,6 @@
 ".\random.o"
 ".\dac.o"
 ".\adc.o"
-".\timer0.o"
 ".\timer1.o"
 ".\sound.o"
 ".\lcd.o"

@@ -426,11 +426,6 @@
               <FilePath>.\ADC.c</FilePath>
             </File>
             <File>
-              <FileName>Timer0.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Timer0.c</FilePath>
-            </File>
-            <File>
               <FileName>Timer1.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Timer1.c</FilePath>

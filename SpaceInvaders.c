@@ -50,9 +50,18 @@
 // Gnd (pin 1) connected to ground
 /************************************************************************************************
 PORTS USED:
+	PORT A - LCD DRIVER
 	PORT B - 0-5 ARE BEING USED FOR DAC  -> Init is in DAC.C
-	PORT E - 3-4 ARE BEING USED FOR ADC  -> Init is in ADC.C
-	PORT A - 0 IS BEING USED FOR A BUTTON ->
+	PORT C - 
+	PORT D - 4 BUTTONS FOR SHOOTING 
+		D0 - DOWN
+		D1 - RIGHT
+		D2 - UP
+		D3 - LEFT
+	PORT E - 3-4 ARE BEING USED FOR ADC  -> Init is in ADC.C	
+		E0 - X ADC
+		E1 - Y ADC
+	PORT F -
 
 
 ************************************************************************************************/
@@ -64,7 +73,8 @@ PORTS USED:
 #include "ADC.h"
 #include "sound.h"
 #include "Sprite.h"
-
+#include "Timer1.h"
+#include "Timer0.h"
 
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -2800,8 +2810,6 @@ Sprite_PlayerDown
 	width = 24
 	height = 24
 *****************************************************************************/
-<<<<<<< HEAD
-<<<<<<< HEAD
 	/***************************************************************************
 																		BOUNDARIES
 	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
@@ -2823,28 +2831,18 @@ Sprite_PlayerDown
 		MAX Y: 150
 	
 	***************************************************************************/
-=======
-
->>>>>>> parent of 8210b70... pls show me how to make another file holy shit
-int UP = 4;
-int DOWN = 3;
+int UP = 0;
+int DOWN = 1;
 int LEFT = 2;
-int RIGHT = 1;
-=======
+int RIGHT = 3;
+int UPRIGHT = 4;
+int UPLEFT = 5;
+int DOWNRIGHT = 6;
+int DOWNLEFT = 7;
+int STAY = 8;
+int ADCStatus1 = 0;
+int Move[2] = {0,0};
 
-
->>>>>>> parent of 946f8fb... 2e2
-// Gonna use Port A for shooting probably, but testing movement with it first
-void PortA_Init(void){
-	SYSCTL_RCGCGPIO_R |= 0x01; //Port A clock turned on
-	while((SYSCTL_PRGPIO_R&0x01) == 0){
-	}; //delay
-	GPIO_PORTA_DIR_R &= ~0x0F;  //PA0-3 Input
-	GPIO_PORTA_AFSEL_R &= ~0x0F; // Regular for PA0-3
-	GPIO_PORTA_DEN_R |= 0x0F; // Enable digital I/O for PA0-3
-	GPIO_PORTA_AMSEL_R &= ~0x0F; // Disable analog for PA0-3
-	GPIO_PORTA_PCTL_R &= ~0xFF;
-}
 
 struct Character{
 	int16_t xpos;    //Where to print on x-coordinate
@@ -2871,38 +2869,24 @@ typedef struct Bullet Bullet_t;
 Character_t Player;  // Struct of Main Player
 Character_t Enemy;   //Struct of an Enemy
 Bullet_t Bullet;		//Struct of Bullet
-int new_move; 
 
-
-void Move_Char(Character_t *character){
-	if(GPIO_PORTA_DATA_R&&0x01 == 0x01){
-		character->xpos += 1;
-	}
-	if(GPIO_PORTA_DATA_R&&0x02 == 0x02){
-		character->xpos -= 1;
-	}
-	if(GPIO_PORTA_DATA_R&&0x04 == 0x04){
-		character->ypos += 1;
-	}
-	if(GPIO_PORTA_DATA_R&&0x08 == 0x08){
-		character->ypos -= 1;
-	}
-	new_move = 0;
-	
-}
-	
 void Print_Char(Character_t *character){
 	ST7735_DrawBitmap(character->xpos, character->ypos, character->images[character->direction], character->width, character->height);
 };
 void Print_Bullet(Bullet_t *bullet){
 	ST7735_DrawBitmap(bullet->xpos, bullet->ypos, bullet->image[0], bullet->width, bullet->height);
 };
-
+void LCD_RemoveChar(Character_t *character){
+	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
+}
+void LCD_RemoveBullet(Bullet_t *bullet){
+	ST7735_FillRect(bullet->xpos, bullet->ypos, bullet->width, bullet->height, 0x55FE);
+}
 void char_init(){ 
 	Player.alive = 1;
 	Player.direction = 0;
 	Player.xpos = 50;
-	Player.ypos = 80;
+	Player.ypos = 50;
 	Player.height = 24;
 	Player.width = 24;
 	Player.images[0] = Sprite_PlayerDown;
@@ -2923,8 +2907,6 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
 //2 characters to compare, one's moving
 void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with character2
 	int leftline = (character->xpos); //left line. x = xpos
@@ -2937,73 +2919,386 @@ void enemy_collision(Character_t *character, Character_t *character2, int move, 
 	int botline2 = (character2->ypos);
 	int leftline2 = (character2->xpos);
 	int rightline2 = (character2->xpos) + (character->width) - 1;
-=======
-void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with charcter2
-	int botleft = character->xpos; // On a coordinate, this is the bottom left pixel of the sprite
-	int botright = character->xpos+character->width-1;
-	int topline = (character->ypos) - (character->height) + 1; //
-	int topright = character->ypos-character->height+character->width-1;
->>>>>>> parent of 8210b70... pls show me how to make another file holy shit
 	
-	int top = (character2->ypos) - (character2->height)+ 1 ;
-	int bot = (character2->xpos);
 	
 	if(direction == UP){
-		if(topline + move <=  character2->ypos){
-			
+		if(topline - move <=  botline2){
+			if(rightline >= leftline2 && leftline <= rightline2){
+				//collided
+			}
 		}
 	}
-=======
-void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with charcter2
-	character->xpos
->>>>>>> parent of 946f8fb... 2e2
+	if(direction == DOWN){
+		if(botline + move >= topline2){
+			if(rightline >= leftline2 && leftline <= rightline2){
+				//collided
+			}
+		}
+	}
+	if(direction == LEFT){
+		if(leftline - move <= rightline2){
+			if(topline <= botline2 && botline >= topline2){
+				//collided
+			}
+		}
+	}
+	if(direction == RIGHT){
+		if(rightline + move>= leftline2){
+			if(topline <= botline2 && botline >= topline2){
+				//collided
+			}
+		}
+	}
 }
-void LCD_RemoveChar(Character_t *character){
-	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
+void PortD_Init(void){
+	SYSCTL_RCGCGPIO_R |= 0x08; //Port D clock turned on
+	while((SYSCTL_PRGPIO_R&0x08) == 0){
+	}; //delay
+	GPIO_PORTD_DIR_R &= ~0x0F;  //PD0-3 Input
+	GPIO_PORTD_AFSEL_R &= ~0x0F; // Regular for PD0-3
+	GPIO_PORTD_DEN_R |= 0x0F; // Enable digital I/O for PD0-3
+	GPIO_PORTD_AMSEL_R &= ~0x0F; // Disable analog for PD0-3
+	GPIO_PORTD_PCTL_R &= ~0xFF;
 }
-void LCD_RemoveBullet(Bullet_t *bullet){
-	ST7735_FillRect(bullet->xpos, bullet->ypos, bullet->width, bullet->height, 0x55FE);
+int bullet_count=0;
+struct Bullet Bullets[10];
+void Create_Bullet(int16_t bullet_count, int16_t xpos, int16_t ypos, int16_t direction){
+
+	Bullets[bullet_count].alive=1;
+	Bullets[bullet_count].xpos=xpos;
+	Bullets[bullet_count].ypos=ypos;
+	Bullets[bullet_count].direction=direction;
+	
+}
+
+int direction=0;
+int down=0;
+int right=1;
+int up=2;
+int left=3;
+int Bullet_Exist_Down=0;		//indicator that a bullet in this direction has already been printed 
+int Bullet_Exist_Right=0;
+int Bullet_Exist_Left=0;
+int Bullet_Exist_Up=0;
+int i=0;
+void Check_Gun_Buttons(void){
+	
+	if((GPIO_PORTD_DATA_R&0x01)==0x01){				//shooting down offset to print below the characters feet
+		if(Bullets[(bullet_count+1)].alive==0){
+		//ST7735_DrawBitmap(((Player.xpos)+8), ((Player.ypos)+8), Bullet.image[0], Bullet.width, Bullet.height); 
+		bullet_count++;
+		if(bullet_count>=10){
+			bullet_count=0;
+		}
+		direction=down;
+		Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)+8),direction);
+		}
+	}
+	if((GPIO_PORTD_DATA_R&0x02)==0x02){				//shooting right offset to print from the right of the character
+		if(Bullets[(bullet_count+1)].alive==0){
+		bullet_count++;
+		if(bullet_count>=10){
+			bullet_count=0;
+		}
+		direction=right;
+		Create_Bullet(bullet_count, ((Player.xpos)+20),((Player.ypos)-6),direction);
+		}
+	}
+	if((GPIO_PORTD_DATA_R&0x04)==0x04){				//shooting up offset to print above character's head
+		if(Bullets[(bullet_count+1)].alive==0){
+		bullet_count++;
+		if(bullet_count>=10){
+			bullet_count=0;
+		}
+		direction=up;
+		Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)-20),direction);
+		}
+	}
+	if((GPIO_PORTD_DATA_R&0x08)==0x08){				//shooting left offset to print to the left of the character
+		if(Bullets[(bullet_count+1)].alive==0){
+		bullet_count++;
+		if(bullet_count>=10){
+			bullet_count=0;
+		}
+		direction=left;
+		Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)-6),direction);
+		}
+	}
+}
+//	FOR 9X9
+//		MINIMUM X: 8
+//		MAX X:111 
+//		MINIMUM Y: 19
+//		MAX Y: 150
+//LCD_RemoveBullet(Bullet_t *bullet)
+void Move_Bullets(void){
+	for(int i=0; i<10; i++){
+		if(Bullets[i].alive==1){
+			if(Bullets[i].direction==0){		//down
+				if(Bullets[i].ypos==148){
+					Bullets[i].alive=0;
+					LCD_RemoveBullet(&Bullets[i]);
+				}
+				Bullets[i].ypos=(Bullets[i].ypos+1);
+				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+			}
+			if(Bullets[i].direction==1){		//right
+				if(Bullets[i].xpos==100){
+					Bullets[i].alive=0;
+					LCD_RemoveBullet(&Bullets[i]);
+				}
+				Bullets[i].xpos=(Bullets[i].xpos+1);
+				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+			}		
+			if(Bullets[i].direction==2){		//up
+				if(Bullets[i].ypos==19){
+					Bullets[i].alive=0;
+				}
+				Bullets[i].ypos=(Bullets[i].ypos-1);
+				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+			}
+			if(Bullets[i].direction==3){		//left
+				if(Bullets[i].xpos==9){
+					Bullets[i].alive=0;
+					LCD_RemoveBullet(&Bullets[i]);
+				}
+				Bullets[i].xpos=(Bullets[i].xpos-1);
+				ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+			}
+		}
+	}
+}
+struct Character Enemies[10];
+void Create_Enemy(int16_t Enemy_Count, int16_t direction,int16_t xpos, int16_t ypos){
+	Enemies[Enemy_Count].alive=1;
+	Enemies[Enemy_Count].xpos=xpos;
+	Enemies[Enemy_Count].ypos=ypos;
+	Enemies[Enemy_Count].direction=direction;
+}
+
+
+int Gate=0;	
+int Enemy_Count=0;
+int xpos=0;
+int ypos=0;
+void Spawn_Enemies(void){
+	Gate=(Random()%4);				//pick Random location to spawn enemy
+	if(Gate==0){							//spawn at bottom of map
+		Enemy_Count++;
+		if(Enemy_Count>=10){
+			Enemy_Count=0;
+		}
+		direction=down;
+		xpos=48;
+		ypos=150;
+		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+	}
+	if(Gate==1){							//spawn at right of map
+		Enemy_Count++;
+		if(Enemy_Count>=10){
+			Enemy_Count=0;
+		}
+		direction=right;
+		xpos=8;
+		ypos=48;
+		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+	}
+	if(Gate==2){							//spawn at top of map
+		Enemy_Count++;
+		if(Enemy_Count>=10){
+			Enemy_Count=0;
+		}
+		direction=up;
+		xpos=48;
+		ypos=22;
+		Create_Enemy(Enemy_Count, direction, xpos, ypos);
+	}
+	if(Gate==3){							//spawn at left of map
+		Enemy_Count++;
+		if(Enemy_Count>=10){
+			Enemy_Count=0;
+		}
+		direction=left;
+		xpos=100;
+		ypos=68;
+		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+	}
+}
+int xcalc=0;
+int ycalc=0;
+void Enemy_Position(int x, int y){
+	xcalc=(Player.xpos-(Enemies[i].xpos));
+	ycalc=(Player.ypos-(Enemies[i].ypos));
+	if(xcalc>0){
+		Enemies[i].xpos++;
+	}
+	if(ycalc>0){
+		Enemies[i].ypos++;
+	}
+	if(xcalc<0){
+		Enemies[i].xpos--;
+	}
+	if(ycalc<0){
+		Enemies[i].ypos--;
+	}
+}
+
+void Move_Enemies (void){
+	for(int i=0; i<10; i++){
+		if((Enemies[i].alive)==1){
+			Enemy_Position(Enemies[i].xpos , Enemies[i].ypos);
+			if((Enemies[i].ypos==34)||(Enemies[i].ypos==150)||(Enemies[i].xpos==8)||(Enemies[i].xpos==96)){		//check for collision with any wall
+					Enemies[i].alive=0;
+					LCD_RemoveChar(&Enemies[i]);
+				}
+			ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
+		}
+	}
+}
+uint8_t Input_PlayerMove(void){
+	
+	while(ADCStatus1 == 0){};
+	ADCStatus1 = 0;
+	//Move[0] - P1 Horizontal
+	//Move[1] - P1 Vertical
+	if(Move[0] > 0x800){
+		if(Move[1] < 0x750){
+			return DOWNRIGHT;
+		}
+		if(Move[1] > 0x800){
+			return UPRIGHT;
+		}
+		else{
+			return RIGHT;
+		}
+	}
+	if(Move[0] < 0x750 ){
+		if(Move[1] < 0x750){
+			return DOWNLEFT;
+		}
+		if(Move[1] > 0x800){
+			return UPLEFT;
+		}
+		else{
+			return LEFT;
+		}
+	}
+	if(Move[1] < 0x750){
+		if(Move[0] > 0x800){
+			return DOWNRIGHT;
+		}
+		if(Move[0] < 0x750){
+			return DOWNLEFT;
+		}
+		else{
+			return DOWN;
+		}
+	}
+	if(Move[1] > 0x800){
+		if(Move[0] > 0x800){
+			return UPRIGHT;
+		}
+		if(Move[0] < 0x750){
+			return UPLEFT;
+		}
+		else{
+			return UP;
+		}
+	}
+	else{
+		return STAY;
+	}
+}
+//towards wires, down is 0  - Move[1] 0x750 - 0x800 is center
+//left - 0 for Move[0]
+void Input_Joystick(void){
+	ADC_In(Move);
+	ADCStatus1 = 1;
+}
+void PlayerMove(void){
+	int move = Input_PlayerMove();
+	if( move == UP){
+		if( Player.ypos <= 150 && Player.ypos > 34){
+			Player.ypos -= 1;
+		}
+	}
+	if( move == DOWN){
+		if( Player.ypos < 150 && Player.ypos >= 34){
+			Player.ypos += 1;
+		}
+	}
+	if( move == RIGHT){
+		if( Player.xpos >= 8 && Player.xpos < 96){
+			Player.xpos += 1;
+		}
+	}
+	if( move == LEFT){
+		if( Player.xpos > 8 && Player.xpos <= 96){
+			Player.xpos -= 1;
+		}
+	}
+	if( move == UPLEFT){
+		if( Player.ypos < 150 && Player.ypos > 34){
+			Player.ypos -= 1;
+		}
+		if( Player.xpos > 8 && Player.xpos < 96){
+			Player.xpos -= 1;
+		}
+	}
+	if( move == DOWNLEFT){
+		if( Player.ypos < 150 && Player.ypos > 34){
+			Player.ypos += 1;
+		}
+		if( Player.xpos > 8 && Player.ypos < 96){
+			Player.xpos -= 1;
+		}
+	}
+	if( move == UPRIGHT){
+		if( Player.xpos > 8 && Player.xpos < 96){
+			Player.xpos += 1;
+		}
+		if( Player.ypos < 150 && Player.ypos > 34){
+			Player.ypos -= 1;
+		}
+	}
+	if( move == DOWNRIGHT){
+		if( Player.xpos < 8 && Player.xpos > 96){
+			Player.xpos += 1;
+		}
+		if( Player.ypos < 150 && Player.ypos > 34){
+			Player.ypos += 1;
+		}
+	}
 }
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
-  Random_Init(1);
   Output_Init();						//Initializes screen
-	//Sound_Init() // initializes DAC and sets up sound struct
-	Random_Init(NVIC_ST_CURRENT_R);
-	
+//	Sound_Init(); // initializes DAC and sets up sound struct
+	ADC_Init();
+//	Timer1_Init(&Joy_In, 2000000);
+	Random_Init(1);
+	Random_Init(NVIC_ST_CURRENT_R );
 	char_init();
 	bullet_init();
 	enemy_init();
-	PortA_Init();
-	
+	PortD_Init();
 	ST7735_DrawBitmap(0,160,Map,128,160);
-	ST7735_DrawBitmap(30,120,Sprite_Bullet,9,9);
-	ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
-	ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
-	ST7735_DrawBitmap(20, 80,Sprite_PlayerDown,24,24);
+	//ST7735_DrawBitmap(30,120,Sprite_Bullet,9,9);
+	//ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
+	//ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
+	ST7735_DrawBitmap(50, 80,Sprite_PlayerDown,24,24);
+	while(1){
+		Check_Gun_Buttons();
+		Move_Bullets();
+		ST7735_FillRect(Bullet.xpos, Bullet.ypos, Bullet.width, Bullet.height, 0x55FE);
+		Spawn_Enemies();
+		Move_Enemies();
+		Input_Joystick();
+		PlayerMove();
+		Print_Char(&Player);
+	}
 	
-	/***************************************************************************
-																		BOUNDARIES
-	CAN'T HAVE A PIXEL OVERWRITE THESE COORDINATES
-	([0-128],[0-10]) 
-	([0-128],[150-160])
-	([0-8],[0-160])
-	([120-128],[0-160])
-	
-	FOR 24x24
-		MINIMUM X: 8
-		MAX X: 96
-		MINIMUM Y: 34
-		MAX Y: 150
-	
-	FOR 9X9
-		MINIMUM X: 8
-		MAX X:111 
-		MINIMUM Y: 19
-		MAX Y: 150
-	
-	***************************************************************************/
-  while(1){
+
 		/*
 		while(Player.xpos < 96){
 			Player.xpos +=1;
@@ -3013,7 +3308,6 @@ int main(void){
 			Player.xpos -= 1;
 			Print_Image(&Player);
 		}
-		*/
 		if(GPIO_PORTA_DATA_R&&0x0F != 0x00){
 			new_move = 1;
 		}
@@ -3023,7 +3317,7 @@ int main(void){
 		
 		Print_Char(&Player);
 		Delay100ms(1);
-
+		*/
 		
 		/****************************************************************
 					Main Engine Brainstorm
@@ -3064,14 +3358,121 @@ int main(void){
 		
 		
 		****************************************************************/
-  }
 	
 
 }
 
 
 // You can use this timer only if you learn how it works
+/**********************************************************************
+other functions I wanna implement but this file is getting too damn long
 
+uint8_t Input_EnemyMove(Character_t *enemy, Character_t *player1){
+	int16_t hor;
+	int16_t ver;
+	
+	//if the enemy is still coming in from the outside, then they should continue to move in the same direction until they are completely in
+	if(enemy->xpos < 0){
+		return RIGHT;
+	}
+	if(enemy->xpos > 160-enemy->width){
+		return LEFT;
+	}
+	if(enemy->ypos < 15+enemy->height){
+		return DOWN;
+	}
+	if(enemy->ypos > 128){
+		return UP;
+	}
+	
+	if(player1->alive){
+		hor = enemy->xpos - player1->xpos;
+		ver = enemy->ypos - player1->ypos;
+	}
+
+	if(hor > -5 && hor < 5 && ver < 0){
+		return DOWN;
+	}
+	if(hor > -5 && hor < 5 && ver > 0){
+		return UP;
+	}
+	if(hor > 0 && ver > -8 && ver < 8){
+		return LEFT;
+	}
+	if(hor < 0 && ver > -8 && ver < 8){
+		return RIGHT;
+	}
+	if(hor < 0 && ver < 0){
+		return DOWNRIGHT;
+	}
+	if(hor > 0 && ver < 0){
+		return DOWNLEFT;
+	}
+	if(hor < 0 && ver > 0){
+		return UPRIGHT;
+	}
+	if(hor > 0 && ver > 0){
+		return UPLEFT;
+	}
+	else{
+		return NOTHING;
+	}
+}
+uint8_t PlayerMove(void){
+	
+	while(ADCStatus1 == 0){};
+	ADCStatus1 = 0;
+	//Move[0] - P1 Horizontal
+	//Move[1] - P1 Vertical
+	if(Move[0] < 1250){
+		if(Move[1] < 1250){
+			return DOWNRIGHT;
+		}
+		if(Move[1] >2850){
+			return UPRIGHT;
+		}
+		else{
+			return RIGHT;
+		}
+	}
+	if(Move[0] > 2850){
+		if(Move[1] <1250){
+			return DOWNLEFT;
+		}
+		if(Move[1] > 2850){
+			return UPLEFT;
+		}
+		else{
+			return LEFT;
+		}
+	}
+	if(Move[1] < 1250){
+		if(Move[0] < 1250){
+			return DOWNRIGHT;
+		}
+		if(Move[0] > 2850){
+			return DOWNLEFT;
+		}
+		else{
+			return DOWN;
+		}
+	}
+	if(Move[1] > 2850){
+		if(Move[0] < 1250){
+			return UPRIGHT;
+		}
+		if(Move[0] > 2850){
+			return UPLEFT;
+		}
+		else{
+			return UP;
+		}
+	}
+	else{
+		return NOTHING;
+	}
+}
+**************************************************************************************/
 void Delay100ms(uint32_t count){uint32_t volatile time;
   while(count>0){
     time = 727240;  // 0.1sec at 80 MHz
