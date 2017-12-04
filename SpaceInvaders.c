@@ -3251,21 +3251,21 @@ void Spawn_Enemies(void){
 		}
 	}
 }
-int xcalc=0;
-int ycalc=0;
+int calc_x=0;
+int calc_y=0;
 void Enemy_Position(int i, int x, int y){
-	xcalc=(Player.xpos-x);
-	ycalc=(Player.ypos-y);
-	if(xcalc>0){
+	calc_x=(Player.xpos-x);
+	calc_y=(Player.ypos-y);
+	if(calc_x>0){
 		Enemies[i].xpos++;
 	}
-	if(ycalc>0){
+	if(calc_y>0){
 		Enemies[i].ypos++;
 	}
-	if(xcalc<0){
+	if(calc_x<0){
 		Enemies[i].xpos--;
 	}
-	if(ycalc<0){
+	if(calc_y<0){
 		Enemies[i].ypos--;
 	}
 }
@@ -3274,15 +3274,9 @@ void Move_Enemies (void){
 	for(i=0; i<10; i++){
 		if((Enemies[i].alive)==1){
 			Enemy_Position(i, Enemies[i].xpos , Enemies[i].ypos);
-			//if((Enemies[i].ypos==34)||(Enemies[i].ypos==150)||(Enemies[i].xpos==8)||(Enemies[i].xpos==96)){		//check for collision with any wall
-					//Enemies[i].alive=0;
-					//LCD_RemoveChar(&Enemies[i]);
-			//}
-			//else{
-				ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
-			}
+			ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
 		}
-	//}
+	}
 }
 void Enemy_Player_Collision(void){
 	int x_left_char = Player.xpos;
@@ -3502,6 +3496,7 @@ void PlayerMove(void){
 		}
 	}
 }
+int check;
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
   Output_Init();						//Initializes screen
@@ -3519,11 +3514,19 @@ int main(void){
 	//ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
 	//ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
 	ST7735_DrawBitmap(50, 80,Sprite_PlayerDown,24,24);
+	check = 0;
+	Enemies[5].alive = 1;
 	while(1){
+		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
-		Move_Bullets();
-		Spawn_Enemies();
-		//Move_Enemies();
+		if(check == 40000000){
+			Move_Bullets();
+			Spawn_Enemies();
+			Move_Enemies();
+			check = 0;
+		}else{
+			check++;
+		}
 		for(int i = 0; i < 10; i++){
 			if(Enemies[i].alive == 1){
 				enemy_collision(&Player, &Enemies[i]);
