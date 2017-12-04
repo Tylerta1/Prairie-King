@@ -2917,7 +2917,7 @@ void char_init(){
 	Player.alive = 1;
 	Player.direction = 0;
 	Player.xpos = 50;
-	Player.ypos = 50;
+	Player.ypos = 80;
 	Player.height = 24;
 	Player.width = 24;
 	Player.images[0] = Sprite_PlayerDown;
@@ -2941,42 +2941,38 @@ void enemy_init(){
 
 //2 characters to compare, one's moving
 void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with character2
-	int topleft_y2 = (character->ypos) - (character->height) + 1;
-	int topleft_x2 = (character->xpos);
-	int botright_y2 = (character->ypos);
-	int botright_x2 = (character->xpos) + (character->width) - 1;
-	
-	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
-	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
-	int botline = (character->ypos);                           // y = ypos
-	
+	int one_topleft_x = (character->xpos);
+	int one_topleft_y = (character->ypos) - (character->height) + 1;
+	int one_botright_x = (character->xpos) + (character->width) - 1;
+	int one_botright_y = (character->ypos);
+		
 	//same for 2nd char
-	int topright_y = (character2->ypos) - (character2->height) + 1 ;
-	int topright_x = (character2->xpos) + (character2->width) - 1;
-	int botleft_y = (character2->ypos);
-	int botleft_x = (character2->xpos);
-	int topleft_y = (character2->ypos) - (character2->height) + 1;
-	int topleft_x = (character2->xpos);
-	int botright_y = (character2->ypos);
-	int botright_x = (character2->xpos) + (character2->width) - 1;
+	int two_topright_x = (character2->xpos) + (character2->width) - 1;
+	int two_topright_y = (character2->ypos) - (character2->height) + 1 ;
+	int two_botright_x = (character2->xpos) + (character2->width) - 1;
+	int two_botright_y = (character2->ypos);
+	int two_topleft_x = (character2->xpos);
+	int two_topleft_y = (character2->ypos) - (character2->height) + 1;
+	int two_botleft_x = (character2->xpos);
+	int two_botleft_y = (character2->ypos);
 	
 	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
-	if((topleft_x2 <= topright_x) && (topright_x <= botright_x2) && (topleft_y2 <= topright_y) && (topright_y <= botright_y2)){
+	if((one_topleft_x <= two_topright_x) && (two_topright_x <= one_botright_x) && (one_topleft_y <= two_topright_y) && (two_topright_y <= one_botright_y)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((topleft_x2 <= botright_x) && (botright_x <= botright_x2) && (topleft_y2 <= botright_y) && (botright_y <= botright_y2)){
+	if((one_topleft_x <= two_botright_x) && (two_botright_x <= one_botright_x) && (one_topleft_y <= two_botright_y) && (two_botright_y <= one_botright_y)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((topleft_x2 <= topleft_x) && (topleft_x <= botright_x2) && (topleft_y2 <= topleft_y) && (topleft_y <= botright_y2)){
+	if((one_topleft_x <= two_topleft_x) && (two_topleft_x <= one_botright_x) && (one_topleft_y <= two_topleft_y) && (two_topleft_y <= one_botright_y)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((topleft_x2 <= botleft_x) && (botleft_x <= botright_x2) && (topleft_y2 <= botleft_y) && (botleft_y <= botright_y2)){
+	if((one_topleft_x <= two_botleft_x) && (two_botleft_x <= one_botright_x) && (one_topleft_y <= two_botleft_y) && (two_botleft_y <= one_botright_y)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
@@ -3517,17 +3513,15 @@ int main(void){
 	//ST7735_DrawBitmap(30,120,Sprite_Bullet,9,9);
 	//ST7735_DrawBitmap(80, 80,RightEnemy,24,24);
 	//ST7735_DrawBitmap(40, 40,LeftEnemy,24,24);
-	ST7735_DrawBitmap(50, 80,Sprite_PlayerDown,24,24);
 	check = 0;
-	Enemies[5].alive = 1;
 	while(1){
 		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
 		Spawn_Enemies();
+		Move_Enemies();
+		Delay100ms(10);
 		if(check == 1000){
-			
 			Move_Bullets();
-			Move_Enemies();
 			check = 0;
 		}else{
 			check++;
