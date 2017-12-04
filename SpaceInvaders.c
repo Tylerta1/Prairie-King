@@ -3095,42 +3095,42 @@ void Move_Bullets(void){
 	for(int i=0; i<10; i++){
 		if(Bullets[i].alive==1){
 			if(Bullets[i].direction==DOWN){		//down
-				if(Bullets[i].ypos<=148){
+				if(Bullets[i].ypos > 150){
 					Bullets[i].alive=0;
-					LCD_RemoveBullet(&Bullets[i]);
+					//LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos+1);
-					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullets[i].image[0], Bullets[i].width, Bullets[i].height);
 				}
 			}
 			if(Bullets[i].direction==RIGHT){		//right
-				if(Bullets[i].xpos>=100){
+				if(Bullets[i].xpos>111){
 					Bullets[i].alive=0;
-					LCD_RemoveBullet(&Bullets[i]);
+					//LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].xpos=(Bullets[i].xpos+1);
-					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullets[i].image[0], Bullets[i].width, Bullets[i].height);
 				}
 			}		
 			if(Bullets[i].direction==UP){		//up
-				if(Bullets[i].ypos<=19){
+				if(Bullets[i].ypos<19){
 					Bullets[i].alive=0;
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos-1);
-					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullets[i].image[0], Bullets[i].width, Bullets[i].height);
 				}
 			}
 			if(Bullets[i].direction==LEFT){		//left
-				if(Bullets[i].xpos<=9){
+				if(Bullets[i].xpos<8){
 					Bullets[i].alive=0;
-					LCD_RemoveBullet(&Bullets[i]);
+					//LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].xpos=(Bullets[i].xpos-1);
-					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullet.image[0], Bullet.width, Bullet.height);
+					ST7735_DrawBitmap(Bullets[i].xpos, Bullets[i].ypos, Bullets[i].image[0], Bullets[i].width, Bullets[i].height);
 				}
 			}
 		}
@@ -3512,13 +3512,14 @@ int main(void){
 	check = 0;
 	while(1){
 		Check_Gun_Buttons(); // Checks if button is pressed, if so, instantiate bullet object
-		Spawn_Enemies(); // Creates the 10 Enemy objects
-		Move_Enemies();  // Moves then prints enemy to screen
+		//Spawn_Enemies(); // Creates the 10 Enemy objects
+		//Move_Enemies();  // Moves then prints enemy to screen
 		Move_Bullets();	// Move and print bullet
-		Delay100ms(10);
+		//Delay100ms(10);
 		
 		
 		/*************************COLLISIONS**************************************/
+		/*
 		for(int i = 0; i < 10; i++){	
 			if(Enemies[i].alive == 1){ // Checks if Player has been collided with Enemy
 				if(enemy_collision(&Player, &Enemies[i]) == 1){
@@ -3542,12 +3543,12 @@ int main(void){
 				}
 			}
 		}
-		
+		*/
+		/**************************************************************************/
 		PlayerMove();
 		if(Player.alive == 1){
 			Print_Char(&Player);
 		}
-		//Enemy_Player_Collision();
 	}
 	
 
