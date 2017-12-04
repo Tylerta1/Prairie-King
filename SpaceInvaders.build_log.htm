@@ -3,27 +3,25 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-C:\Users\Tyler Ta\Desktop\Keil_Ta\EE319Kware\Prairie-King\SpaceInvaders.uvproj
+C:\Users\Alex\Desktop\GitHub Projects\Prairie-King\SpaceInvaders.uvproj
 Project File Date:  12/03/2017
 
 <h2>Output:</h2>
-Rebuild target 'SpaceInvaders'
-assembling startup.s...
-assembling random.s...
-compiling DAC.c...
-compiling ADC.c...
-compiling Timer1.c...
-compiling Sound.c...
-assembling LCD.s...
-assembling Print.s...
+Build target 'SpaceInvaders'
 compiling SpaceInvaders.c...
+linking...
+.\SpaceInvaders.axf: error: L6047U: The size of this image (94004 bytes) exceeds the maximum allowed for this version of the linker
+Finished: 0 information, 0 warning, 0 error and 1 fatal error messages.
+".\SpaceInvaders.axf" - 1 Error(s), 0 Warning(s).
+Target not created
+warning:  #12-D: parsing restarts here after previous syntax error
+  int UP = 0;
+SpaceInvaders.c(3366): error:  #20: identifier "UP" is undefined
+                        return UP;
+SpaceInvaders.c(3385): error:  #20: identifier "UP" is undefined
+        if( move == UP){
+SpaceInvaders.c: 1 warning, 3 errors
 compiling ST7735.c...
 compiling PLL.c...
-linking...
-Program Size: Code=5096 RO-data=87588 RW-data=172 ZI-data=1636  
-".\SpaceInvaders.axf" - 0 Error(s), 0 Warning(s).
-Load "C:\\Users\\Tyler Ta\\Desktop\\Keil_Ta\\EE319Kware\\Prairie-King\\SpaceInvaders.axf" 
-Connecting: Mode=JTAG, Speed=1000000Hz
-Erase Done.
-Programming Done.
-Verify OK.
+".\SpaceInvaders.axf" - 3 Error(s), 1 Warning(s).
+Target not created

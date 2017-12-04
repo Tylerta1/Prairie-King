@@ -2831,8 +2831,37 @@ Sprite_PlayerDown
 		MAX X:111 
 		MINIMUM Y: 19
 		MAX Y: 150
+	print(character, 24, 24, 0, 0)
+	
+	
+	
+	
+	-> x increase
+	(0,0)/					/
+	
+					(1,2).
+	
+	
+			 /					/
+	((Player.xpos),(Player.ypos - Player.height + 1))
+	/				/
+	  image
+	.				/
 	
 	***************************************************************************/
+int matrix[129][161]; // 0 - Nothing, 1 - Player, 2 - Bullet, 3 - Enemy, 4 - Walls, maybe 5 - Pickups
+// make a loop to make everything = 0;
+// ******************WALLS************************
+// make another loop to make x 0-8 and 120-128 = 4;
+// make another loop to make y 0-10 and 150-160 = 4;
+// ******************MOVING SHIT******************
+// in player move function set the matrix at ((Player.xpos),(Player.ypos - Player.height + 1)) to 1 and set previous location to 0
+// in bullet move function set the matrix at ((Bullet.xpos),(Bullet.ypos - Bullet.height + 1)) to 2 and set previous location to 0
+// in enemy move function set the matrix at ((Enemy.xpos),(Enemy.ypos - Enemy.height + 1)) to 2 and set previous location to 0
+// ******************WORRY ABOUT PICKUPS LATER****
+// 
+// ******************COLLISIONS*******************
+// in each of the 3 move functions, if that current obj is trying to move to a place with matrix[x][y] != 0, do shit
 int UP = 0;
 int DOWN = 1;
 int LEFT = 2;
@@ -2909,49 +2938,86 @@ void enemy_init(){
 	Enemy.images[0] = LeftEnemy;
 	Enemy.images[1] = RightEnemy;
 }
+
 //2 characters to compare, one's moving
-void enemy_collision(Character_t *character, Character_t *character2, int move, int direction){ //if character will collide with character2
+void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with character2
 	int leftline = (character->xpos); //left line. x = xpos
 	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
 	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
 	int botline = (character->ypos);                           // y = ypos
 	
 	//same for 2nd char
-	int topline2 = (character2->ypos) - (character2->height)+ 1 ;
-	int botline2 = (character2->ypos);
-	int leftline2 = (character2->xpos);
-	int rightline2 = (character2->xpos) + (character->width) - 1;
+	int topright_y = (character2->ypos) - (character2->height) + 1 ;
+	int topright_x = (character2->xpos) + (character->width) - 1;
+	int botleft_y = (character2->ypos);
+	int botleft_x = (character2->xpos);
+	int topleft_y = (character2->ypos) - (character2->height) + 1;
+	int topleft_x = (character2->xpos);
+	int botright_y = (character2->ypos);
+	int botright_x = (character2->xpos) + (character->width) - 1;
 	
-	
-	if(direction == UP){
-		if(topline - move <=  botline2){
-			if(rightline >= leftline2 && leftline <= rightline2){
-				//collided
+	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
+	if((leftline <= topright_x) && (topright_x <= rightline) && (topline <= topright_y) && (topright_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
-		}
 	}
-	if(direction == DOWN){
-		if(botline + move >= topline2){
-			if(rightline >= leftline2 && leftline <= rightline2){
-				//collided
+	if((leftline <= botright_x) && (botright_x <= rightline) && (topline <= botright_y) && (botright_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
-		}
 	}
-	if(direction == LEFT){
-		if(leftline - move <= rightline2){
-			if(topline <= botline2 && botline >= topline2){
-				//collided
+	if((leftline <= topleft_x) && (topleft_x <= rightline) && (topline <= topleft_y) && (topleft_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
-		}
 	}
-	if(direction == RIGHT){
-		if(rightline + move>= leftline2){
-			if(topline <= botline2 && botline >= topline2){
-				//collided
+	if((leftline <= botleft_x) && (botleft_x <= rightline) && (topline <= botleft_y) && (botleft_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
-		}
 	}
 }
+
+void bullet_collision(Character_t *character, Bullet_t *character2){ //if character will collide with bullet
+	int leftline = (character->xpos); //left line. x = xpos
+	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
+	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
+	int botline = (character->ypos);                           // y = ypos
+	
+	//same for 2nd char
+	int topright_y = (character2->ypos) - (character2->height) + 1 ;
+	int topright_x = (character2->xpos) + (character->width) - 1;
+	int botleft_y = (character2->ypos);
+	int botleft_x = (character2->xpos);
+	int topleft_y = (character2->ypos) - (character2->height) + 1;
+	int topleft_x = (character2->xpos);
+	int botright_y = (character2->ypos);
+	int botright_x = (character2->xpos) + (character->width) - 1;
+	
+	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
+	if((leftline <= topright_x) && (topright_x <= rightline) && (topline <= topright_y) && (topright_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
+			}
+	}
+	if((leftline <= botright_x) && (botright_x <= rightline) && (topline <= botright_y) && (botright_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
+			}
+	}
+	if((leftline <= topleft_x) && (topleft_x <= rightline) && (topline <= topleft_y) && (topleft_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
+			}
+	}
+	if((leftline <= botleft_x) && (botleft_x <= rightline) && (topline <= botleft_y) && (botleft_y <= botline)){
+		while(1){
+				ST7735_DrawBitmap(0,160,Map,128,160);
+			}
+	}
+}
+
 void PortD_Init(void){
 	SYSCTL_RCGCGPIO_R |= 0x08; //Port D clock turned on
 	while((SYSCTL_PRGPIO_R&0x08) == 0){
@@ -3084,6 +3150,8 @@ void Create_Enemy(int16_t Enemy_Count, int16_t direction,int16_t xpos, int16_t y
 	Enemies[Enemy_Count].xpos=xpos;
 	Enemies[Enemy_Count].ypos=ypos;
 	Enemies[Enemy_Count].direction=direction;
+	Enemies[Enemy_Count].height=Player.height;
+	Enemies[Enemy_Count].width=Player.width;
 }
 
 
@@ -3091,54 +3159,103 @@ int Gate=0;
 int Enemy_Count=0;
 int xpos=0;
 int ypos=0;
+int count=0;
+int Enemy_Full;
+int South_status=0;
+int South_count=0;
+int East_status=0;
+int East_count=0;
+int North_status=0;
+int North_count=0;
+int West_status=0;
+int West_count=0;
 void Spawn_Enemies(void){
-	Gate=(Random()%4);				//pick Random location to spawn enemy
-	if(Gate==0){							//spawn at bottom of map
-		Enemy_Count++;
-		if(Enemy_Count>=10){
-			Enemy_Count=0;
+	for(int i=0;i<10;i++){
+		if(Enemies[i].alive==1){
+			count++;
 		}
-		direction=down;
-		xpos=48;
-		ypos=150;
-		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
 	}
-	if(Gate==1){							//spawn at right of map
-		Enemy_Count++;
-		if(Enemy_Count>=10){
-			Enemy_Count=0;
+	if(count!=10){
+		Gate=(Random()%4);				//pick Random location to spawn enemy
+		if(Gate==0){							//spawn at bottom of map
+			South_count++;
+			if(South_count==24){
+				South_status=0;
+				//South_count = 0;
+			}
+			if(South_status==0){
+				Enemy_Count++;
+				if(Enemy_Count>=10){
+					Enemy_Count=0;
+				}
+				direction=down;
+				xpos=52;
+				ypos=150;
+				Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+				South_status=1;
+			}
 		}
-		direction=right;
-		xpos=8;
-		ypos=48;
-		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
-	}
-	if(Gate==2){							//spawn at top of map
-		Enemy_Count++;
-		if(Enemy_Count>=10){
-			Enemy_Count=0;
+		if(Gate==1){							//spawn at right of map
+			East_count++;
+			if(East_count==24){
+				East_status=0;
+				//East_count = 0;
+			}
+			if(East_status==0){
+				Enemy_Count++;
+				if(Enemy_Count>=10){
+					Enemy_Count=0;
+				}
+				direction=right;
+				xpos=96;
+				ypos=96;
+				Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+				East_status = 1;
+			}
 		}
-		direction=up;
-		xpos=48;
-		ypos=22;
-		Create_Enemy(Enemy_Count, direction, xpos, ypos);
-	}
-	if(Gate==3){							//spawn at left of map
-		Enemy_Count++;
-		if(Enemy_Count>=10){
-			Enemy_Count=0;
+		if(Gate==2){							//spawn at top of map
+			North_count++;
+			if(North_count==24){
+				North_status=0;
+				//North_count = 0;
+			}
+			if(North_status==0){
+				Enemy_Count++;
+				if(Enemy_Count>=10){
+					Enemy_Count=0;
+				}
+				direction=up;
+				xpos=52;
+				ypos=34;
+				Create_Enemy(Enemy_Count, direction, xpos, ypos);
+				North_status = 1;
+			}
 		}
-		direction=left;
-		xpos=100;
-		ypos=68;
-		Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+		if(Gate==3){							//spawn at left of map
+			West_count++;
+			if(West_count==24){
+				West_status=0;
+				//West_count = 0;
+			}
+			if(West_status==0){
+				Enemy_Count++;
+				if(Enemy_Count>=10){
+					Enemy_Count=0;
+				}
+				direction=left;
+				xpos=8;
+				ypos=96;
+				Create_Enemy(Enemy_Count, direction ,xpos, ypos);
+				West_status = 1;
+			}
+		}
 	}
 }
 int xcalc=0;
 int ycalc=0;
-void Enemy_Position(int x, int y){
-	xcalc=(Player.xpos-(Enemies[i].xpos));
-	ycalc=(Player.ypos-(Enemies[i].ypos));
+void Enemy_Position(int i, int x, int y){
+	xcalc=(Player.xpos-x);
+	ycalc=(Player.ypos-y);
 	if(xcalc>0){
 		Enemies[i].xpos++;
 	}
@@ -3154,15 +3271,43 @@ void Enemy_Position(int x, int y){
 }
 
 void Move_Enemies (void){
-	for(int i=0; i<10; i++){
+	for(i=0; i<10; i++){
 		if((Enemies[i].alive)==1){
-			Enemy_Position(Enemies[i].xpos , Enemies[i].ypos);
-			if((Enemies[i].ypos==34)||(Enemies[i].ypos==150)||(Enemies[i].xpos==8)||(Enemies[i].xpos==96)){		//check for collision with any wall
-					Enemies[i].alive=0;
-					LCD_RemoveChar(&Enemies[i]);
-			}
-			else{
+			Enemy_Position(i, Enemies[i].xpos , Enemies[i].ypos);
+			//if((Enemies[i].ypos==34)||(Enemies[i].ypos==150)||(Enemies[i].xpos==8)||(Enemies[i].xpos==96)){		//check for collision with any wall
+					//Enemies[i].alive=0;
+					//LCD_RemoveChar(&Enemies[i]);
+			//}
+			//else{
 				ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemy.images[0], Enemy.width, Enemy.height);
+			}
+		}
+	//}
+}
+void Enemy_Player_Collision(void){
+	int x_left_char = Player.xpos;
+	int x_right_char = ((Player.xpos)+(Player.width)-1);
+	int y_bottom_char = (Player.ypos); 
+	int y_top_char = (Player.ypos) - (Player.height) + 1; //  top line. y = ypos - height since low y value is higher on screen
+	int x_left_intersect=((x_left_char<=Enemies[i].xpos)&&(Enemies[i].xpos<=x_right_char));			//check left x vertice of enemy
+	int x_right_intersect=((x_left_char<=(Enemies[i].xpos+Enemies[i].width))&&((Enemies[i].xpos+Enemies[i].width)<=x_right_char));		//check right vertice of enemy
+	int y_bottom_intersect=((y_bottom_char>=Enemies[i].ypos)&&(Enemies[i].ypos>=y_top_char));		//check bottom vertice of enemy
+	int y_top_intersect=((y_bottom_char>=(Enemies[i].ypos-Enemies[i].height))&&((Enemies[i].ypos-Enemies[i].height)>=y_top_char));
+	for(int i=0;i<10;i++){
+		if((Enemies[i].alive)==1){
+			if(x_left_intersect){
+				if(y_bottom_intersect||y_top_intersect){
+					while(1){
+							ST7735_DrawBitmap(0,160,Map,128,160);
+					}		
+				}
+			}
+			if(x_right_intersect){
+				if(y_bottom_intersect||y_top_intersect){
+					while(1){
+							ST7735_DrawBitmap(0,160,Map,128,160);
+					}		
+				}
 			}
 		}
 	}
@@ -3220,64 +3365,140 @@ uint8_t Input_PlayerMove(void){
 		return STAY;
 	}
 }
+void Collision_Enemy_Bullet(void){
+	
+}
 //towards wires, down is 0  - Move[1] 0x750 - 0x800 is center
 //left - 0 for Move[0]
 void Input_Joystick(void){
 	ADC_In(Move);
 	ADCStatus = 1;
 }
+int speed_n=4;
 void PlayerMove(void){
 	int move = Input_PlayerMove();
 	if( move == UP){
 		if( Player.ypos <= 150 && Player.ypos > 34){
-			Player.ypos -= 1;
+			Player.ypos -= speed_n;
+		}
+		if(Player.ypos > 150){
+			Player.ypos = 150;
+		}
+		if(Player.ypos <= 34){
+			Player.ypos = 35;
 		}
 	}
 	if( move == DOWN){
 		if( Player.ypos < 150 && Player.ypos >= 34){
-			Player.ypos += 1;
+			Player.ypos += speed_n;
+		}
+		if(Player.ypos >= 150){
+			Player.ypos = 149;
+		}
+		if(Player.ypos < 34){
+			Player.ypos = 34;
 		}
 	}
 	if( move == RIGHT){
 		if( Player.xpos >= 8 && Player.xpos < 96){
-			Player.xpos += 1;
+			Player.xpos += speed_n;
+		}
+		if(Player.xpos >= 96){
+			Player.xpos = 95;
+		}
+		if(Player.xpos < 8){
+			Player.xpos = 8;
 		}
 	}
 	if( move == LEFT){
 		if( Player.xpos > 8 && Player.xpos <= 96){
-			Player.xpos -= 1;
+			Player.xpos -= speed_n;
+		}
+		if(Player.xpos > 96){
+			Player.xpos = 96;
+		}
+		if(Player.xpos <= 8){
+			Player.xpos = 9;
 		}
 	}
 	if( move == UPLEFT){
 		if( Player.xpos > 8 && Player.xpos <= 96){
-			Player.xpos -= 1;
+			Player.xpos -= speed_n;
+		}
+		if(Player.xpos > 96){
+			Player.xpos = 96;
+		}
+		if(Player.xpos <= 8){
+			Player.xpos = 9;
 		}
 		if( Player.ypos <= 150 && Player.ypos > 34){
-			Player.ypos -= 1;
+			Player.ypos -= speed_n;
+		}
+		if(Player.ypos > 150){
+			Player.ypos = 150;
+		}
+		if(Player.ypos <= 34){
+			Player.ypos = 35;
 		}
 	}
 	if( move == DOWNLEFT){
 		if( Player.xpos > 8 && Player.xpos <= 96){
-			Player.xpos -= 1;
+			Player.xpos -= speed_n;
+		}
+		if(Player.xpos > 96){
+			Player.xpos = 96;
+		}
+		if(Player.xpos <= 8){
+			Player.xpos = 9;
 		}
 		if( Player.ypos < 150 && Player.ypos >= 34){
-			Player.ypos += 1;
+			Player.ypos += speed_n;
+		}
+		if(Player.ypos >= 150){
+			Player.ypos = 149;
+		}
+		if(Player.ypos < 34){
+			Player.ypos = 34;
 		}
 	}
 	if( move == UPRIGHT){
 		if( Player.xpos >= 8 && Player.xpos < 96){
-			Player.xpos += 1;
+			Player.xpos += speed_n;
+		}
+		if(Player.xpos >= 96){
+			Player.xpos = 95;
+		}
+		if(Player.xpos < 8){
+			Player.xpos = 8;
 		}
 		if( Player.ypos <= 150 && Player.ypos > 34){
-			Player.ypos -= 1;
+			Player.ypos -= speed_n;
+		}
+		if(Player.ypos > 150){
+			Player.ypos = 150;
+		}
+		if(Player.ypos <= 34){
+			Player.ypos = 35;
 		}
 	}
 	if( move == DOWNRIGHT){
 		if( Player.xpos >= 8 && Player.xpos < 96){
-			Player.xpos += 1;
+			Player.xpos += speed_n;
+		}
+		if(Player.xpos >= 96){
+			Player.xpos = 95;
+		}
+		if(Player.xpos < 8){
+			Player.xpos = 8;
 		}
 		if( Player.ypos < 150 && Player.ypos >= 34){
-			Player.ypos += 1;
+			Player.ypos += speed_n;
+		}
+		if(Player.ypos >= 150){
+			Player.ypos = 149;
+		}
+		if(Player.ypos < 34){
+			Player.ypos = 34;
 		}
 	}
 }
@@ -3302,10 +3523,21 @@ int main(void){
 		Check_Gun_Buttons();
 		Move_Bullets();
 		Spawn_Enemies();
-		Move_Enemies();
+		//Move_Enemies();
+		for(int i = 0; i < 10; i++){
+			if(Enemies[i].alive == 1){
+				enemy_collision(&Player, &Enemies[i]);
+			}
+			for(int j = 0; j < 10; j++){
+				if(Bullets[j].alive == 1){
+					bullet_collision(&Enemies[i], &Bullets[j]);
+				}
+			}
+		}
+		
 		PlayerMove();
 		Print_Char(&Player);
-
+		//Enemy_Player_Collision();
 	}
 	
 
