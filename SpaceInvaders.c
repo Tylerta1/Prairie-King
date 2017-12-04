@@ -2871,6 +2871,7 @@ struct Character{
 	uint8_t alive;	//should be alive or not
 	uint8_t width;  //how big the image is
 	uint8_t height; // ^
+	uint8_t destroy; // if to be destroyed or not
 };
 
 struct Bullet{
@@ -2881,6 +2882,7 @@ struct Bullet{
 	uint8_t height; // ^
 	int16_t direction; //Where it will shoot
 	uint8_t alive; //when bullet collides with something, i.e. wall, enemy, barrell
+	uint8_t destroy;
 };
 typedef struct Character Character_t;
 typedef struct Bullet Bullet_t;
@@ -2947,6 +2949,7 @@ void char_init(){
 	Player.height = 24;
 	Player.width = 24;
 	Player.images[0] = Sprite_PlayerDown;
+	Player.destroy = 0;
 }
 void bullet_init(){
 	for(int i = 0; i<10; i++){
@@ -2954,6 +2957,7 @@ void bullet_init(){
 		Bullets[i].height = 9;
 		Bullets[i].width = 9;
 		Bullets[i].alive = 0;
+		Bullets[i].destroy = 0;
 	}
 }
 void enemy_init(){
@@ -2964,6 +2968,7 @@ void enemy_init(){
 		Enemies[i].width = 24;
 		Enemies[i].images[0] = LeftEnemy;
 		Enemies[i].images[1] = RightEnemy;
+		Enemies[i].destroy = 0;
 	}
 }
 
@@ -3086,7 +3091,7 @@ void Check_Gun_Buttons(void){
 			if(bullet_count>=10){
 				bullet_count=0;
 			}
-			Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)-6),LEFT);
+			Create_Bullet(bullet_count, ((Player.xpos)-8),((Player.ypos)-6),LEFT);
 		}
 	}
 }
@@ -3095,9 +3100,11 @@ void Move_Bullets(void){
 	for(int i=0; i<10; i++){
 		if(Bullets[i].alive==1){
 			if(Bullets[i].direction==DOWN){		//down
-				if(Bullets[i].ypos > 150){
+				if(Bullets[i].ypos > 148){
 					Bullets[i].alive=0;
-					//LCD_RemoveBullet(&Bullets[i]);
+					Bullets[i].destroy = 1;
+//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
+//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos+1);
@@ -3105,9 +3112,9 @@ void Move_Bullets(void){
 				}
 			}
 			if(Bullets[i].direction==RIGHT){		//right
-				if(Bullets[i].xpos>111){
+				if(Bullets[i].xpos>109){
 					Bullets[i].alive=0;
-					//LCD_RemoveBullet(&Bullets[i]);
+					Bullets[i].destroy = 1;
 				}
 				else{
 					Bullets[i].xpos=(Bullets[i].xpos+1);
@@ -3115,8 +3122,11 @@ void Move_Bullets(void){
 				}
 			}		
 			if(Bullets[i].direction==UP){		//up
-				if(Bullets[i].ypos<19){
+				if(Bullets[i].ypos<21){
 					Bullets[i].alive=0;
+					Bullets[i].destroy = 1;
+//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
+//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos-1);
@@ -3124,9 +3134,11 @@ void Move_Bullets(void){
 				}
 			}
 			if(Bullets[i].direction==LEFT){		//left
-				if(Bullets[i].xpos<8){
+				if(Bullets[i].xpos<9){
 					Bullets[i].alive=0;
-					//LCD_RemoveBullet(&Bullets[i]);
+					Bullets[i].destroy = 1;
+//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
+//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].xpos=(Bullets[i].xpos-1);
@@ -3512,20 +3524,21 @@ int main(void){
 	check = 0;
 	while(1){
 		Check_Gun_Buttons(); // Checks if button is pressed, if so, instantiate bullet object
-		//Spawn_Enemies(); // Creates the 10 Enemy objects
-		//Move_Enemies();  // Moves then prints enemy to screen
+		Spawn_Enemies(); // Creates the 10 Enemy objects
+		Move_Enemies();  // Moves then prints enemy to screen
 		Move_Bullets();	// Move and print bullet
-		//Delay100ms(10);
+		Delay100ms(10);
 		
 		
 		/*************************COLLISIONS**************************************/
-		/*
 		for(int i = 0; i < 10; i++){	
 			if(Enemies[i].alive == 1){ // Checks if Player has been collided with Enemy
 				if(enemy_collision(&Player, &Enemies[i]) == 1){
 					Player.alive = 0;
 				}
 				if(Player.alive == 0){
+					Player.ypos = Player.ypos - Player.height;
+					Delay100ms(5);
 					LCD_RemoveChar(&Player);
 					while(1){
 						ST7735_OutString("You Lose");
@@ -3536,14 +3549,19 @@ int main(void){
 				if(Bullets[j].alive == 1){	// Checks if Enemy has been collided with a bullet
 					if(bullet_collision(&Enemies[i], &Bullets[j]) == 1){
 						Enemies[i].alive = 0;
+						Enemies[i].destroy = 1;
 					}
-					if(Enemies[i].alive == 0){
-						LCD_RemoveChar(&Enemies[i]);
-					}
+				}
+				if(Enemies[i].destroy == 1){
+					Enemies[i].ypos = Enemies[i].ypos - Enemies[i].height;
+					LCD_RemoveChar(&Enemies[i]);
+				}
+				if(Bullets[j].destroy == 1){
+					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
+					LCD_RemoveBullet(&Bullets[i]);
 				}
 			}
 		}
-		*/
 		/**************************************************************************/
 		PlayerMove();
 		if(Player.alive == 1){
