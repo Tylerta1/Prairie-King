@@ -3519,9 +3519,9 @@ int main(void){
 	while(1){
 		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
-		if(check == 4000000){
+		Spawn_Enemies();
+		if(check == 1000000){
 			Move_Bullets();
-			Spawn_Enemies();
 			Move_Enemies();
 			check = 0;
 		}else{
