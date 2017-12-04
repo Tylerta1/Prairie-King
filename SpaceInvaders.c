@@ -2941,38 +2941,46 @@ void enemy_init(){
 
 //2 characters to compare, one's moving
 void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with character2
-	int leftline = (character->xpos); //left line. x = xpos
+	int topright_y2 = (character->ypos) - (character->height) + 1 ;
+	int topright_x2 = (character->xpos) + (character->width) - 1;
+	int botleft_y2 = (character->ypos);
+	int botleft_x2 = (character->xpos);
+	int topleft_y2 = (character->ypos) - (character->height) + 1;
+	int topleft_x2 = (character->xpos);
+	int botright_y2 = (character->ypos);
+	int botright_x2 = (character->xpos) + (character->width) - 1;
+	
 	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
 	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
 	int botline = (character->ypos);                           // y = ypos
 	
 	//same for 2nd char
 	int topright_y = (character2->ypos) - (character2->height) + 1 ;
-	int topright_x = (character2->xpos) + (character->width) - 1;
+	int topright_x = (character2->xpos) + (character2->width) - 1;
 	int botleft_y = (character2->ypos);
 	int botleft_x = (character2->xpos);
 	int topleft_y = (character2->ypos) - (character2->height) + 1;
 	int topleft_x = (character2->xpos);
 	int botright_y = (character2->ypos);
-	int botright_x = (character2->xpos) + (character->width) - 1;
+	int botright_x = (character2->xpos) + (character2->width) - 1;
 	
 	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
-	if((leftline <= topright_x) && (topright_x <= rightline) && (topline <= topright_y) && (topright_y <= botline)){
+	if((topleft_x2 <= topright_x) && (topright_x <= botright_x2) && (topleft_y2 <= topright_y) && (topright_y <= botright_y2)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((leftline <= botright_x) && (botright_x <= rightline) && (topline <= botright_y) && (botright_y <= botline)){
+	if((topleft_x2 <= botright_x) && (botright_x <= botright_x2) && (topleft_y2 <= botright_y) && (botright_y <= botright_y2)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((leftline <= topleft_x) && (topleft_x <= rightline) && (topline <= topleft_y) && (topleft_y <= botline)){
+	if((topleft_x2 <= topleft_x) && (topleft_x <= botright_x2) && (topleft_y2 <= topleft_y) && (topleft_y <= botright_y2)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
 	}
-	if((leftline <= botleft_x) && (botleft_x <= rightline) && (topline <= botleft_y) && (botleft_y <= botline)){
+	if((topleft_x2 <= botleft_x) && (botleft_x <= botright_x2) && (topleft_y2 <= botleft_y) && (botleft_y <= botright_y2)){
 		while(1){
 				ST7735_DrawBitmap(0,160,Map,128,160);
 			}
@@ -3519,8 +3527,9 @@ int main(void){
 	while(1){
 		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
-		Spawn_Enemies();
-		if(check == 1000000){
+		
+		if(check == 1000){
+			Spawn_Enemies();
 			Move_Bullets();
 			Move_Enemies();
 			check = 0;
