@@ -2941,10 +2941,6 @@ void enemy_init(){
 
 //2 characters to compare, one's moving
 void enemy_collision(Character_t *character, Character_t *character2){ //if character will collide with character2
-	int topright_y2 = (character->ypos) - (character->height) + 1 ;
-	int topright_x2 = (character->xpos) + (character->width) - 1;
-	int botleft_y2 = (character->ypos);
-	int botleft_x2 = (character->xpos);
 	int topleft_y2 = (character->ypos) - (character->height) + 1;
 	int topleft_x2 = (character->xpos);
 	int botright_y2 = (character->ypos);
@@ -3527,9 +3523,9 @@ int main(void){
 	while(1){
 		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
-		
+		Spawn_Enemies();
 		if(check == 1000){
-			Spawn_Enemies();
+			
 			Move_Bullets();
 			Move_Enemies();
 			check = 0;
