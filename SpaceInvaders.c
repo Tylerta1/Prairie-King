@@ -2849,7 +2849,7 @@ Sprite_PlayerDown
 	.				/
 	
 	***************************************************************************/
-int matrix[129][161]; // 0 - Nothing, 1 - Player, 2 - Bullet, 3 - Enemy, 4 - Walls, maybe 5 - Pickups
+// int matrix[129][161]; // 0 - Nothing, 1 - Player, 2 - Bullet, 3 - Enemy, 4 - Walls, maybe 5 - Pickups
 // make a loop to make everything = 0;
 // ******************WALLS************************
 // make another loop to make x 0-8 and 120-128 = 4;
@@ -3519,7 +3519,7 @@ int main(void){
 	while(1){
 		//ST7735_DrawBitmap(0,160,Map,128,160);
 		Check_Gun_Buttons();
-		if(check == 40000000){
+		if(check == 4000000){
 			Move_Bullets();
 			Spawn_Enemies();
 			Move_Enemies();
