@@ -3561,7 +3561,7 @@ int main(void){
 					LCD_RemoveChar(&Player);
 					Delay100ms(5);
 					while(1){
-						ST7735_OutString("You Lose");
+						ST7735_OutString("You Lose! ");
 					}
 				}
 			}
@@ -3588,120 +3588,15 @@ int main(void){
 				}
 			}
 		}
-		/**************************************************************************/
 		PlayerMove();
 		if(Player.alive == 1){
 			Print_Char(&Player);
 		}
 	}
-	
-
-		/*
-		while(Player.xpos < 96){
-			Player.xpos +=1;
-			Print_Image(&Player);
-		}
-		while(Player.xpos > 8){
-			Player.xpos -= 1;
-			Print_Image(&Player);
-		}
-		if(GPIO_PORTA_DATA_R&&0x0F != 0x00){
-			new_move = 1;
-		}
-		if(new_move == 1){
-			Move_Char(&Player);
-		}
-		
-		Print_Char(&Player);
-		Delay100ms(1);
-		*/
-		
-		/****************************************************************
-					Main Engine Brainstorm
-		
-		
-		
-		for(i=0; i<num_enemy; i++){ // checks if zombie dead
-			if(enemy[i].alive == 0){
-				LCD_RemoveChar(&zombies[i]);
-				Reorganize();
-				score += 100;
-			}
-		}
-		
-		
-
-		if(Player.alive == 0){ //Checks constantly if player is dead
-				LCD_RemoveChar(&Player);
-				LCD_RemoveBullet(&Bullet);
-				Sound_Death();
-				Game_Over();
-		}
-		
-		
-		****************************************************************/
-	
-
 }
 
 
 // You can use this timer only if you learn how it works
-/**********************************************************************
-other functions I wanna implement but this file is getting too damn long
-
-uint8_t Input_EnemyMove(Character_t *enemy, Character_t *player1){
-	int16_t hor;
-	int16_t ver;
-	
-	//if the enemy is still coming in from the outside, then they should continue to move in the same direction until they are completely in
-	if(enemy->xpos < 0){
-		return RIGHT;
-	}
-	if(enemy->xpos > 160-enemy->width){
-		return LEFT;
-	}
-	if(enemy->ypos < 15+enemy->height){
-		return DOWN;
-	}
-	if(enemy->ypos > 128){
-		return UP;
-	}
-	
-	if(player1->alive){
-		hor = enemy->xpos - player1->xpos;
-		ver = enemy->ypos - player1->ypos;
-	}
-
-	if(hor > -5 && hor < 5 && ver < 0){
-		return DOWN;
-	}
-	if(hor > -5 && hor < 5 && ver > 0){
-		return UP;
-	}
-	if(hor > 0 && ver > -8 && ver < 8){
-		return LEFT;
-	}
-	if(hor < 0 && ver > -8 && ver < 8){
-		return RIGHT;
-	}
-	if(hor < 0 && ver < 0){
-		return DOWNRIGHT;
-	}
-	if(hor > 0 && ver < 0){
-		return DOWNLEFT;
-	}
-	if(hor < 0 && ver > 0){
-		return UPRIGHT;
-	}
-	if(hor > 0 && ver > 0){
-		return UPLEFT;
-	}
-	else{
-		return NOTHING;
-	}
-}
-
-**************************************************************************************/
 void Delay100ms(uint32_t count){uint32_t volatile time;
   while(count>0){
     time = 727240;  // 0.1sec at 80 MHz
