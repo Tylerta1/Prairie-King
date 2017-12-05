@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\SpaceInvaders.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\SpaceInvaders.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Dec 04 17:40:43 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Dec 04 23:06:40 2017
 <BR><P>
 <H3>Maximum Stack Usage =        168 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -807,7 +807,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[96]"></a>Check_Gun_Buttons</STRONG> (Thumb, 330 bytes, Stack size 4 bytes, spaceinvaders.o(i.Check_Gun_Buttons))
+<P><STRONG><a name="[96]"></a>Check_Gun_Buttons</STRONG> (Thumb, 410 bytes, Stack size 4 bytes, spaceinvaders.o(i.Check_Gun_Buttons))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = Check_Gun_Buttons &rArr; Create_Bullet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Create_Bullet
@@ -840,8 +840,8 @@ Global Symbols
 <LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;commandList
 </UL>
 
-<P><STRONG><a name="[98]"></a>Enemy_Track</STRONG> (Thumb, 570 bytes, Stack size 20 bytes, spaceinvaders.o(i.Enemy_Track))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = Enemy_Track &rArr; enemy_collision
+<P><STRONG><a name="[98]"></a>Enemy_Track</STRONG> (Thumb, 740 bytes, Stack size 32 bytes, spaceinvaders.o(i.Enemy_Track))
+<BR><BR>[Stack]<UL><LI>Max Depth = 76<LI>Call Chain = Enemy_Track &rArr; enemy_collision
 </UL>
 <BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_collision
 </UL>
@@ -886,9 +886,9 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[a0]"></a>Move_Enemies</STRONG> (Thumb, 168 bytes, Stack size 16 bytes, spaceinvaders.o(i.Move_Enemies))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80 + Unknown Stack Size
-<LI>Call Chain = Move_Enemies &rArr; ST7735_DrawBitmap &rArr; setAddrWindow
+<P><STRONG><a name="[a0]"></a>Move_Enemies</STRONG> (Thumb, 118 bytes, Stack size 24 bytes, spaceinvaders.o(i.Move_Enemies))
+<BR><BR>[Stack]<UL><LI>Max Depth = 100 + Unknown Stack Size
+<LI>Call Chain = Move_Enemies &rArr; Enemy_Track &rArr; enemy_collision
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_DrawBitmap
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Enemy_Track
@@ -1034,7 +1034,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ST7735_InitR
 </UL>
 
-<P><STRONG><a name="[b1]"></a>Spawn_Enemies</STRONG> (Thumb, 308 bytes, Stack size 8 bytes, spaceinvaders.o(i.Spawn_Enemies))
+<P><STRONG><a name="[b1]"></a>Spawn_Enemies</STRONG> (Thumb, 338 bytes, Stack size 8 bytes, spaceinvaders.o(i.Spawn_Enemies))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24 + Unknown Stack Size
 <LI>Call Chain = Spawn_Enemies &rArr; Create_Enemy
 </UL>
@@ -1083,7 +1083,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[8b]"></a>main</STRONG> (Thumb, 406 bytes, Stack size 8 bytes, spaceinvaders.o(i.main))
+<P><STRONG><a name="[8b]"></a>main</STRONG> (Thumb, 466 bytes, Stack size 8 bytes, spaceinvaders.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 168 + Unknown Stack Size
 <LI>Call Chain = main &rArr; ST7735_OutString &rArr; ST7735_OutChar &rArr; ST7735_DrawString &rArr; ST7735_DrawCharS &rArr; ST7735_FillRect &rArr; setAddrWindow
 </UL>

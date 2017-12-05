@@ -1090,9 +1090,9 @@ ARM Macro Assembler    Page 17
               00000400 
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\startu
-p.d -o.\startup.o -I"C:\Users\Tyler Ta\Desktop\Keil_Ta\ARM\RV31\INC" -I"C:\User
-s\Tyler Ta\Desktop\Keil_Ta\ARM\CMSIS\Include" -I"C:\Users\Tyler Ta\Desktop\Keil
-_Ta\ARM\Inc\Luminary" --list=.\startup.lst startup.s
+p.d -o.\startup.o -I"C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC" -I"C:\Use
+rs\Alex\Desktop\EE 319K - Ta\ARM\CMSIS\Include" -I"C:\Users\Alex\Desktop\EE 319
+K - Ta\ARM\Inc\Luminary" --list=.\startup.lst startup.s
 
 
 

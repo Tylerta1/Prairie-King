@@ -215,9 +215,9 @@ ARM Macro Assembler    Page 4
               40004100 
               40008008 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\lcd.d 
--o.\lcd.o -I"C:\Users\Tyler Ta\Desktop\Keil_Ta\ARM\RV31\INC" -I"C:\Users\Tyler 
-Ta\Desktop\Keil_Ta\ARM\CMSIS\Include" -I"C:\Users\Tyler Ta\Desktop\Keil_Ta\ARM\
-Inc\Luminary" --list=.\lcd.lst LCD.s
+-o.\lcd.o -I"C:\Users\Alex\Desktop\EE 319K - Ta\ARM\RV31\INC" -I"C:\Users\Alex\
+Desktop\EE 319K - Ta\ARM\CMSIS\Include" -I"C:\Users\Alex\Desktop\EE 319K - Ta\A
+RM\Inc\Luminary" --list=.\lcd.lst LCD.s
 
 
 

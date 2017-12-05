@@ -2847,7 +2847,13 @@ Sprite_PlayerDown
 	/				/
 	  image
 	.				/
-	
+	//	xold = x before move
+//  yold = yenemy_collision(&Player, &Enemies[i]);
+
+// print old, with a square 
+// print new, in that order
+// void (*AI)(void) previ
+// previous  = PORTE_DATA_&0sadi0a
 	***************************************************************************/
 // int matrix[129][161]; // 0 - Nothing, 1 - Player, 2 - Bullet, 3 - Enemy, 4 - Walls, maybe 5 - Pickups
 // make a loop to make everything = 0;
@@ -2904,17 +2910,10 @@ int ADCStatus = 0;
 int Move[2] = {0,0};
 int speed_n=4;
 int bullet_count=0;
-int Bullet_Exist_Down=0;		//indicator that a bullet in this direction has already been printed 
-int Bullet_Exist_Right=0;
-int Bullet_Exist_Left=0;
-int Bullet_Exist_Up=0;
-int i=0;
 int Gate=0;	
-int Enemy_Count=0;
 int xpos=0;
 int ypos=0;
 int Num_Enemies=0;
-int Enemy_Full;
 int South_status=0;
 int South_count=0;
 int East_status=0;
@@ -2923,9 +2922,11 @@ int North_status=0;
 int North_count=0;
 int West_status=0;
 int West_count=0;
-int calc_x=0;
-int calc_y=0;
 int check;
+int count_down = 0;
+int count_up = 0;
+int count_left = 0;
+int count_right = 0;
 
 
 
@@ -3057,41 +3058,46 @@ void Create_Bullet(int16_t bullet_count, int16_t xpos, int16_t ypos, int16_t dir
 	Bullets[bullet_count].ypos=ypos;
 	Bullets[bullet_count].direction=direction;
 }
+
 void Check_Gun_Buttons(void){
 	if((GPIO_PORTD_DATA_R&0x01)==0x01){				//shooting down offset to print below the characters feet
 		if(Bullets[(bullet_count+1)].alive==0){
-			bullet_count++;
-			if(bullet_count>=10){
-				bullet_count=0;
+			if(count_down == 0){
+				bullet_count = (bullet_count+1)%10;
+				Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)+8),DOWN);
+				count_down = 10;
 			}
-			Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)+8),DOWN);
+			count_down--;
 		}
 	}
 	if((GPIO_PORTD_DATA_R&0x02)==0x02){				//shooting right offset to print from the right of the character
 		if(Bullets[(bullet_count+1)].alive==0){
-			bullet_count++;
-			if(bullet_count>=10){
-				bullet_count=0;
+			if(count_right == 0){
+				bullet_count = (bullet_count+1)%10;
+				Create_Bullet(bullet_count, ((Player.xpos)+20),((Player.ypos)-6),RIGHT);
+				count_right = 10;
 			}
-			Create_Bullet(bullet_count, ((Player.xpos)+20),((Player.ypos)-6),RIGHT);
+			count_right--;
 		}
 	}
 	if((GPIO_PORTD_DATA_R&0x04)==0x04){				//shooting up offset to print above character's head
 		if(Bullets[(bullet_count+1)].alive==0){
-			bullet_count++;
-			if(bullet_count>=10){
-				bullet_count=0;
+			if(count_up == 0){
+				bullet_count = (bullet_count+1)%10;
+				Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)-20),UP);
+				count_up = 10;
 			}
-			Create_Bullet(bullet_count, ((Player.xpos)+8),((Player.ypos)-20),UP);
+			count_up--;
 		}
 	}
 	if((GPIO_PORTD_DATA_R&0x08)==0x08){				//shooting left offset to print to the left of the character
 		if(Bullets[(bullet_count+1)].alive==0){
-			bullet_count++;
-			if(bullet_count>=10){
-				bullet_count=0;
+			if(count_left == 0){
+				bullet_count = (bullet_count+1)%10;
+				Create_Bullet(bullet_count, ((Player.xpos)-8),((Player.ypos)-6),LEFT);
+				count_left = 10;
 			}
-			Create_Bullet(bullet_count, ((Player.xpos)-8),((Player.ypos)-6),LEFT);
+			count_left--;
 		}
 	}
 }
@@ -3103,8 +3109,6 @@ void Move_Bullets(void){
 				if(Bullets[i].ypos > 148){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
-//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
-//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos+1);
@@ -3125,8 +3129,6 @@ void Move_Bullets(void){
 				if(Bullets[i].ypos<21){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
-//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
-//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].ypos=(Bullets[i].ypos-1);
@@ -3137,8 +3139,6 @@ void Move_Bullets(void){
 				if(Bullets[i].xpos<9){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
-//					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
-//					LCD_RemoveBullet(&Bullets[i]);
 				}
 				else{
 					Bullets[i].xpos=(Bullets[i].xpos-1);
@@ -3155,13 +3155,6 @@ void Create_Enemy(int16_t Enemy_Count, int16_t direction,int16_t xpos, int16_t y
 	Enemies[Enemy_Count].ypos=ypos;
 	Enemies[Enemy_Count].direction=direction;
 }
-//	xold = x before move
-//  yold = yenemy_collision(&Player, &Enemies[i]);
-
-// print old, with a square 
-// print new, in that order
-// void (*AI)(void) previ
-// previous  = PORTE_DATA_&0sadi0a
 void Spawn_Enemies(void){
 	/*
 	for(int i=0;i<10;i++){
@@ -3170,8 +3163,7 @@ void Spawn_Enemies(void){
 		}
 	}
 	*/
-	Num_Enemies++;
-	if(Num_Enemies!=7){
+	if(Num_Enemies <= 7){
 		Gate=(Random()%4);				//pick Random location to spawn enemy
 		if(Gate==0){							//spawn at bottom of map
 			South_count++;
@@ -3181,6 +3173,7 @@ void Spawn_Enemies(void){
 			}
 			if(South_status==0){
 				Create_Enemy(Num_Enemies, DOWN ,52, 150); //
+				Num_Enemies++;
 				South_status=1;
 			}
 		}
@@ -3192,6 +3185,7 @@ void Spawn_Enemies(void){
 			}
 			if(East_status==0){
 				Create_Enemy(Num_Enemies, RIGHT ,96, 96);
+				Num_Enemies++;
 				East_status = 1;
 			}
 		}
@@ -3203,6 +3197,7 @@ void Spawn_Enemies(void){
 			}
 			if(North_status==0){
 				Create_Enemy(Num_Enemies, UP, 52, 34);
+				Num_Enemies++;
 				North_status = 1;
 			}
 		}
@@ -3214,6 +3209,7 @@ void Spawn_Enemies(void){
 			}
 			if(West_status==0){
 				Create_Enemy(Num_Enemies, LEFT ,8, 96);
+				Num_Enemies++;
 				West_status = 1;
 			}
 		}
@@ -3221,101 +3217,126 @@ void Spawn_Enemies(void){
 }
 
 void Enemy_Track(int i, int x, int y){
+	int calc_x;
+	int calc_y;
+	int dont_move = 0;
 	calc_x=(Player.xpos-x);
 	calc_y=(Player.ypos-y);
 	if(calc_x>0){
-		Enemies[i].xpos++;
 		if(i != 0){
 			for(int k = 0; k < i; k++){
-				if(enemy_collision(&Enemies[k], &Enemies[i]) != 1){
-					//Enemies[i].xpos++;
+				if(enemy_collision(&Enemies[k], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 			for(int a = (i+1); a < 10; a++){
-				if(enemy_collision(&Enemies[a], &Enemies[i]) != 1){
-					//Enemies[i].xpos++;
+				if(enemy_collision(&Enemies[a], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 		}
 		else{
 			for(int b = 1; b < 10; b++){
-				if(enemy_collision(&Enemies[b], &Enemies[i]) != 1){
-					//Enemies[i].xpos++;
+				if(enemy_collision(&Enemies[b], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
+		}
+		if(dont_move == 0){
+			Enemies[i].xpos++;
+		}
+		else{
+			dont_move = 0;
 		}
 	}
 	if(calc_y>0){
 		Enemies[i].ypos++;
 		if(i != 0){
 			for(int k = 0; k < i; k++){
-				if(enemy_collision(&Enemies[k], &Enemies[i]) != 1){
-					//Enemies[i].ypos++;
+				if(enemy_collision(&Enemies[k], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 			for(int a = (i+1); a < 10; a++){
-				if(enemy_collision(&Enemies[a], &Enemies[i]) != 1){
-					//Enemies[i].ypos++;
+				if(enemy_collision(&Enemies[a], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 		}
 		else{
 			for(int b = 1; b < 10; b++){
-				if(enemy_collision(&Enemies[b], &Enemies[i]) != 1){
-					//Enemies[i].ypos++;
+				if(enemy_collision(&Enemies[b], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
+		}
+		if(dont_move == 0){
+			Enemies[i].ypos++;
+		}
+		else{
+			dont_move = 0;
 		}
 	}
 	if(calc_x<0){
 		Enemies[i].xpos--;
 		if(i != 0){
 			for(int k = 0; k < i; k++){
-				if(enemy_collision(&Enemies[k], &Enemies[i]) != 1){
-					//Enemies[i].xpos--;
+				if(enemy_collision(&Enemies[k], &Enemies[i]) == 1){
+					dont_move  = 1;
 				}
 			}
 			for(int a = (i+1); a < 10; a++){
-				if(enemy_collision(&Enemies[a], &Enemies[i]) != 1){
-					//Enemies[i].xpos--;
+				if(enemy_collision(&Enemies[a], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 		}
 		else{
 			for(int b = 1; b < 10; b++){
-				if(enemy_collision(&Enemies[b], &Enemies[i]) != 1){
-					//Enemies[i].xpos--;
+				if(enemy_collision(&Enemies[b], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 		}
-
+		if(dont_move == 0){
+			Enemies[i].xpos--;
+		}
+		else{
+			dont_move = 0;
+		}
 	}
 	if(calc_y<0){
 		Enemies[i].ypos--;
 		if(i != 0){
 			for(int k = 0; k < i; k++){
-				if(enemy_collision(&Enemies[k], &Enemies[i]) != 1){
-					//Enemies[i].ypos--;
+				if(enemy_collision(&Enemies[k], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 			for(int a = (i+1); a < 10; a++){
-				if(enemy_collision(&Enemies[a], &Enemies[i]) != 1){
-					//Enemies[i].ypos--;
+				if(enemy_collision(&Enemies[a], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
 		}
 		else{
 			for(int b = 1; b < 10; b++){
-				if(enemy_collision(&Enemies[b], &Enemies[i]) != 1){
-					//Enemies[i].ypos--;
+				if(enemy_collision(&Enemies[b], &Enemies[i]) == 1){
+					dont_move = 1;
 				}
 			}
+		}
+		if(dont_move == 0){
+			Enemies[i].ypos--;
+		}
+		else{
+			dont_move = 0;
 		}
 	}
 }
 
 void Move_Enemies (void){
-	for(i=0; i<10; i++){
+	for(int i=0; i<10; i++){
 		if((Enemies[i].alive)==1){
 			Enemy_Track(i, Enemies[i].xpos , Enemies[i].ypos);
 			ST7735_DrawBitmap(Enemies[i].xpos, Enemies[i].ypos, Enemies[i].images[0], Enemies[i].width, Enemies[i].height);
@@ -3523,12 +3544,10 @@ int main(void){
 	ST7735_DrawBitmap(0,160,Map,128,160); // Lays out map
 	check = 0;
 	while(1){
-		Check_Gun_Buttons(); // Checks if button is pressed, if so, instantiate bullet object
 		Spawn_Enemies(); // Creates the 10 Enemy objects
 		Move_Enemies();  // Moves then prints enemy to screen
+		Check_Gun_Buttons(); // Checks if button is pressed, if so, instantiate bullet object
 		Move_Bullets();	// Move and print bullet
-		Delay100ms(10);
-		
 		
 		/*************************COLLISIONS**************************************/
 		for(int i = 0; i < 10; i++){	
@@ -3540,6 +3559,7 @@ int main(void){
 					Player.ypos = Player.ypos - Player.height;
 					Delay100ms(5);
 					LCD_RemoveChar(&Player);
+					Delay100ms(5);
 					while(1){
 						ST7735_OutString("You Lose");
 					}
@@ -3547,18 +3567,24 @@ int main(void){
 			}
 			for(int j = 0; j < 10; j++){
 				if(Bullets[j].alive == 1){	// Checks if Enemy has been collided with a bullet
-					if(bullet_collision(&Enemies[i], &Bullets[j]) == 1){
-						Enemies[i].alive = 0;
-						Enemies[i].destroy = 1;
+					if(Enemies[i].alive ==1){
+						if(bullet_collision(&Enemies[i], &Bullets[j]) == 1){
+							Enemies[i].alive = 0;
+							Enemies[i].destroy = 1;
+							Bullets[j].alive = 0;
+							Bullets[j].destroy = 1;
+						}
 					}
 				}
 				if(Enemies[i].destroy == 1){
 					Enemies[i].ypos = Enemies[i].ypos - Enemies[i].height;
 					LCD_RemoveChar(&Enemies[i]);
+					Enemies[i].destroy = 0;
 				}
 				if(Bullets[j].destroy == 1){
-					Bullets[i].ypos = Bullets[i].ypos - Bullets[i].height;
-					LCD_RemoveBullet(&Bullets[i]);
+					Bullets[j].ypos = Bullets[j].ypos - Bullets[j].height;
+					LCD_RemoveBullet(&Bullets[j]);
+					Bullets[j].destroy = 0;
 				}
 			}
 		}
