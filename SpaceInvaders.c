@@ -1114,7 +1114,6 @@ int main(void){
 		Power_Layering();
 		Power_Down();
 		*/
-		
 		Scoreboard_Update(killed);
 		Spawn_Enemies(); // Creates the 10 Enemy objects
 		Move_Enemies();  // Moves then prints enemy to screen
