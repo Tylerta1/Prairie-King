@@ -833,6 +833,8 @@ struct Sound{
 typedef struct Sound Sound_t;
 Sound_t sound;
 
+int SoundPeriod=0;
+int i;
 void UserFunction(void){
 	//GPIO_PORTF_DATA_R ^= 0x02;
 	DAC_Out(sound.wave[sound.index]);
@@ -840,25 +842,39 @@ void UserFunction(void){
 		sound.index++;
 	}
 }
-void Sound_Init(void){
+void Sound_Init(int period){
 	sound.wave = shoot;
 	sound.size = 0;
 	sound.index = 0;
 	DAC_Init();
 	Timer0_Init(&UserFunction, 14512);
+	DAC_Init();
+	NVIC_ST_CTRL_R = 0;
+	NVIC_ST_RELOAD_R = period - 1; // reload value
+	NVIC_ST_CURRENT_R = 0 ; //clear
+	NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R*0x00FFFFFF)|0x20000000; // priority
+	NVIC_ST_CTRL_R = 0x07; //enable systick w/ interrupt
 }
 void Sound_Play(const uint8_t *pt, uint32_t count){
 	sound.wave = pt;
 	sound.size = count;
 	sound.index = 0;
+	NVIC_ST_RELOAD_R = count-1;
 };
 
 void Sound_Shoot(void){
 	Sound_Play(shoot,4080);
 };
 void Sound_Killed(void){
-// write this
+	Sound_Play(invaderkilled, 3377);
 };
 void Sound_Explosion(void){
-// write this
+
 };
+void SysTick_Handler(void){
+	if(sound.size>0){
+		sound.size--;
+		i = (i+1)&0x0FF0; // Increment 
+		DAC_Out(sound.wave[i]);
+	}
+}

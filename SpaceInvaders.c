@@ -143,7 +143,6 @@ struct Character{
 	uint8_t height; // ^
 	uint8_t destroy; // if to be destroyed or not
 };
-
 struct Bullet{
 	const uint16_t *image[1]; // What to print
 	int16_t xpos; //Where to print on x-coordinate
@@ -154,13 +153,25 @@ struct Bullet{
 	uint8_t alive; //when bullet collides with something, i.e. wall, enemy, barrell
 	uint8_t destroy;
 };
+struct Power{
+	const uint16_t *image[4]; // What to print
+	int16_t xpos; //Where to print on x-coordinate
+	int16_t ypos; //Where to print on y-coordinate
+	uint8_t width;  //how big the image is
+	uint8_t height; // ^
+	int16_t direction; //Where it will shoot
+	uint8_t alive; //when bullet collides with something, i.e. wall, enemy, barrell
+	uint8_t destroy;
+	int16_t timer;
+	uint8_t Image_covered;
+};
 typedef struct Character Character_t;
 typedef struct Bullet Bullet_t;
+typedef struct Power Power_t;
 Character_t Player;  // Struct of Main Player
-Character_t Enemy;   //Struct of an Enemy
-Bullet_t Bullet;		//Struct of Bullet
-struct Character Enemies[10];
-struct Bullet Bullets[10];
+Character_t Enemies[10];
+Bullet_t Bullets[10];
+Power_t Power[4];
 int UP = 0;
 int DOWN = 1;
 int LEFT = 2;
@@ -191,11 +202,21 @@ int count_down = 0;
 int count_up = 0;
 int count_left = 0;
 int count_right = 0;
+int P_Type=0;
+int p_count=0;
+int enemy_status=0;
+int Power_On=0;
+int P_Type1=0;
+int Spawn_Timer=0;
+int Spawn_Set=50;
+int Power_On_Timer=1000;
 int walk = 0;
 int hundreds=35;
 int tens=40;
 int ones=45;
 int killed =0;
+int Move_Set=2;
+int Move_Timer=0;
 
 
 void PortD_Init(void){
@@ -214,12 +235,19 @@ void Print_Char(Character_t *character){
 void Print_Bullet(Bullet_t *bullet){
 	ST7735_DrawBitmap(bullet->xpos, bullet->ypos, bullet->image[0], bullet->width, bullet->height);
 };
+void Print_Power(Power_t *Power, int P_Type){
+	ST7735_DrawBitmap(Power->xpos, Power->ypos, Power->image[P_Type], Power->width, Power->height);
+};
 void LCD_RemoveChar(Character_t *character){
 	ST7735_FillRect(character->xpos, character->ypos, character->width, character->height, 0x55FE);
 }
 void LCD_RemoveBullet(Bullet_t *bullet){
 	ST7735_FillRect(bullet->xpos, bullet->ypos, bullet->width, bullet->height, 0x55FE);
 }
+void LCD_RemovePower(Power_t *Power){
+	ST7735_FillRect(Power->xpos, Power->ypos-9, Power->width, Power->height, 0x55FE);
+}
+
 void char_init(){ 
 	Player.alive = 1;
 	Player.direction = 0;
@@ -248,6 +276,21 @@ void enemy_init(){
 		Enemies[i].images[0] = LeftEnemy;
 		Enemies[i].images[1] = RightEnemy;
 		Enemies[i].destroy = 0;
+	}
+}
+void Power_init(){
+	for(int i = 0; i<10; i++){
+		Power[i].image[0] = tar;
+		Power[i].image[1] = shoe;
+		Power[i].image[2] = gun;
+		Power[i].image[3] = rapidfire;
+		Power[i].direction=0;
+		Power[i].height = 9;
+		Power[i].width = 9;
+		Power[i].alive = 0;
+		Power[i].destroy = 0;
+		Power[i].timer=1000;
+		Power[i].Image_covered=0;
 	}
 }
 
@@ -331,6 +374,73 @@ uint16_t bullet_collision(Character_t *character, Bullet_t *character2){ //if ch
 		return 0;
 	}
 }
+uint16_t Player_Pickedup(Character_t *character, Power_t *Power){ //if character will collide with bullet
+	int leftline = (character->xpos); //left line. x = xpos
+	int rightline = (character->xpos) + (character->width) - 1; // right line. x = xpos + wide
+	int topline = (character->ypos) - (character->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
+	int botline = (character->ypos);                           // y = ypos
+	
+	//same for 2nd char
+	int topright_y = (Power->ypos) - (Power->height) + 1 ;
+	int topright_x = (Power->xpos) + (Power->width) - 1;
+	int botleft_y = (Power->ypos);
+	int botleft_x = (Power->xpos);
+	int topleft_y = (Power->ypos) - (Power->height) + 1;
+	int topleft_x = (Power->xpos);
+	int botright_y = (Power->ypos);
+	int botright_x = (Power->xpos) + (Power->width) - 1;
+	
+	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
+	if((leftline <= topright_x) && (topright_x <= rightline) && (topline <= topright_y) && (topright_y <= botline)){
+		return 1;
+	}
+	if((leftline <= botright_x) && (botright_x <= rightline) && (topline <= botright_y) && (botright_y <= botline)){
+		return 1;
+	}
+	if((leftline <= topleft_x) && (topleft_x <= rightline) && (topline <= topleft_y) && (topleft_y <= botline)){
+		return 1;
+	}
+	if((leftline <= botleft_x) && (botleft_x <= rightline) && (topline <= botleft_y) && (botleft_y <= botline)){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+uint16_t Enemy_Power_C(Character_t *Enemies, Power_t *Power){ //if character will collide with bullet
+	int leftline = (Enemies->xpos); //left line. x = xpos
+	int rightline = (Enemies->xpos) + (Enemies->width) - 1; // right line. x = xpos + wide
+	int topline = (Enemies->ypos) - (Enemies->height) + 1; //  top line. y = ypos - height since low y value is higher on screen
+	int botline = (Enemies->ypos);                           // y = ypos
+	
+	//same for 2nd char
+	int topright_y = (Power->ypos) - (Power->height) + 1 ;
+	int topright_x = (Power->xpos) + (Power->width) - 1;
+	int botleft_y = (Power->ypos);
+	int botleft_x = (Power->xpos);
+	int topleft_y = (Power->ypos) - (Power->height) + 1;
+	int topleft_x = (Power->xpos);
+	int botright_y = (Power->ypos);
+	int botright_x = (Power->xpos) + (Power->width) - 1;
+	
+	// if (topright_x is in between leftline and rightline) && (topright_y is in between topline and botomline)
+	if((leftline <= topright_x) && (topright_x <= rightline) && (topline <= topright_y) && (topright_y <= botline)){
+		return 1;
+	}
+	if((leftline <= botright_x) && (botright_x <= rightline) && (topline <= botright_y) && (botright_y <= botline)){
+		return 1;
+	}
+	if((leftline <= topleft_x) && (topleft_x <= rightline) && (topline <= topleft_y) && (topleft_y <= botline)){
+		return 1;
+	}
+	if((leftline <= botleft_x) && (botleft_x <= rightline) && (topline <= botleft_y) && (botleft_y <= botline)){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
 void Create_Bullet(int16_t bullet_count, int16_t xpos, int16_t ypos, int16_t direction){
 	Bullets[bullet_count].alive=1;
 	Bullets[bullet_count].xpos=xpos;
@@ -833,17 +943,17 @@ void PlayerMove(void){
 	}
 }
 void scoreboard_init(void){
-	ST7735_SetCursor(0,0);
+	ST7735_SetCursor(0,7);
 	ST7735_OutString("Killed:");
-	ST7735_SetCursor(hundreds,0);
+	ST7735_SetCursor(35,7);
 	ST7735_OutChar(0x30);
-	ST7735_SetCursor(tens,0);
+	ST7735_SetCursor(40,7);
 	ST7735_OutChar(0x30);
-	ST7735_SetCursor(ones,0);
+	ST7735_SetCursor(45,7);
 	ST7735_OutChar(0x30);
 }
 
-void scoreboard_update(int killed){
+void Scoreboard_Update(int killed){
 	ST7735_SetCursor(0,0);
 	ST7735_OutString("Killed:");
 	hundreds=(killed/100);
@@ -856,6 +966,104 @@ void scoreboard_update(int killed){
 	ST7735_SetCursor(45,0);
 	ST7735_OutChar((0x30)+ones);
 }
+void Spawn_Powerups(void){
+	p_count++;
+	if(p_count<4){
+		P_Type=(Random()%4);
+		Power[P_Type].xpos=(Random()/2);
+		if(Power[P_Type].xpos<8){
+			Power[P_Type].xpos+=10;
+		}
+		if(Power[P_Type].xpos>105){
+			Power[P_Type].xpos-=30;
+		}
+		Power[P_Type].ypos=((Random()/5)*3);
+		if(Power[P_Type].ypos<20){
+			Power[P_Type].ypos+=20;
+		}
+		if(Power[P_Type].ypos>150){
+			Power[P_Type].ypos-=10;
+		}
+		if(P_Type==0){					//tar
+			Power[P_Type].alive=1;
+			Power[P_Type].direction=P_Type;
+			Print_Power(&Power[P_Type],P_Type);			//P_Type also indicates image to print
+		}
+		if(P_Type==1){				//shoe
+			Power[P_Type].alive=1;
+			Power[P_Type].direction=P_Type;
+			Print_Power(&Power[P_Type],P_Type);			//P_Type also indicates image to print
+		}
+		if(P_Type==2){				//gun
+			Power[P_Type].alive=1;
+			Power[P_Type].direction=P_Type;
+			Print_Power(&Power[P_Type],P_Type);			//P_Type also indicates image to print
+		}
+		if(P_Type==3){					//rapidfire
+			Power[P_Type].alive=1;
+			Power[P_Type].direction=P_Type;
+			Print_Power(&Power[P_Type],P_Type);			//P_Type also indicates image to print
+		}
+	}
+}
+
+void POWER_UP(int P_Type1){
+	if(Power_On==0){
+		if(Power[P_Type1].direction==0){			//tar
+			Power_On=1;
+			speed_n=4;
+		}
+		if(Power[P_Type1].direction==1){			//shoe
+			Power_On=1;
+			speed_n+=2;
+		}
+		if(Power[P_Type1].direction==2){			//gun
+			Power_On=1;
+			speed_n=4;
+		}
+		if(Power[P_Type1].direction==3){			//rapidfire
+			Power_On=1;
+			speed_n=4;			
+		}
+	}
+}
+void Power_Layering(void){
+	for(int l=0; l<10; l++){
+		for(int m=0; m<3; m++){
+			if((Enemy_Power_C(&Enemies[l], &Power[m]))==1){
+				Power[m].Image_covered=1;
+			}
+		}
+	}
+	for(int l=0; l<3; l++){
+		if(Power[l].Image_covered==1){
+			for(int m=0; m<10; m++){
+				if((Enemy_Power_C(&Enemies[m], &Power[l]))==0){
+					Power[l].Image_covered=0;
+				}
+			}
+		}
+	}
+	for(int m=0;m<3;m++){
+		if(Power[m].alive==1){
+			if(Power[m].Image_covered==0){
+				P_Type=Power[m].direction;
+				Print_Power(&Power[m], P_Type);
+			}
+		}
+	}
+}
+
+void Power_Down(void){
+	if(Power_On){
+		Power_On_Timer--;
+		if(Power_On_Timer<10){
+			Power_On=0;
+			speed_n=4;
+			Power_On_Timer=1000;
+		}
+	}
+}
 
 int main(void){
   PLL_Init(Bus80MHz);       // Bus clock is 80 MHz 
@@ -866,6 +1074,9 @@ int main(void){
 	Random_Init(1);						// Initializes random
 	Random_Init(NVIC_ST_CURRENT_R );  // Random seed
 	Timer1_Init(&Input_Joystick, 8000000);		//Grabs analog data from joystick every 1ms
+	//Timer0_Init(&Spawn_Enemies, 200000000);
+	//Power_init();
+	//Sound_Init(50000);
 	char_init();							// Creates Player object
 	bullet_init();						// Defines Bullet object array
 	enemy_init();							// Defines Enemy object array
@@ -881,13 +1092,30 @@ int main(void){
 	ST7735_DrawBitmap(56,93,one,16,26); // StartMenu
 	Delay100ms(10);
 	ST7735_DrawBitmap(0,160,Map,128,160);
-	scoreboard_init();
+	//scoreboard_init();
 	check = 0;
 	Delay100ms(30);
 	
 	
 	while(1){
-		scoreboard_update(killed);
+		/*
+		Spawn_Timer++;
+		if(Spawn_Timer==Spawn_Set){
+			Spawn_Enemies();
+			Spawn_Timer=0;
+		}
+		//Spawn_Enemies(); 		// Creates the 10 Enemy objects
+		Move_Timer++;
+		if(Move_Timer==Move_Set){
+			Move_Enemies();  			// Moves then prints enemy to screen
+			Move_Timer=0;
+		}
+		Spawn_Powerups();
+		Power_Layering();
+		Power_Down();
+		*/
+		
+		Scoreboard_Update(killed);
 		Spawn_Enemies(); // Creates the 10 Enemy objects
 		Move_Enemies();  // Moves then prints enemy to screen
 		Check_Gun_Buttons(); // Checks if button is pressed, if so, instantiate bullet object
@@ -909,6 +1137,8 @@ int main(void){
 					}
 				}
 			}
+		//Check_Gun_Buttons();
+		//Move_Bullets();
 			for(int j = 0; j < 10; j++){
 				if(Bullets[j].alive == 1){	// Checks if Enemy has been collided with a bullet
 					if(Enemies[i].alive ==1){
@@ -925,6 +1155,8 @@ int main(void){
 					LCD_RemoveChar(&Enemies[i]);
 					Enemies[i].destroy = 0;
 					killed++;
+					//Num_Enemies--;
+					Sound_Killed();
 				}
 				if(Bullets[j].destroy == 1){
 					Bullets[j].ypos = Bullets[j].ypos - Bullets[j].height;
@@ -933,6 +1165,28 @@ int main(void){
 				}
 			}
 		}
+		/*
+		Check_Gun_Buttons();
+		Move_Bullets();
+		for(int k=0; k<4; k++){							//checks if power up has been picked up
+			if(Power[k].alive==1){
+				if(Player_Pickedup(&Player, &Power[k])==1){
+					Power[k].alive=0;
+					LCD_RemovePower(&Power[k]);
+					P_Type1=Power[k].direction;
+					POWER_UP(k);
+				}
+				else{
+					Power[k].timer--;
+					if(Power[k].timer==0){
+						Power[k].timer=1000;
+						Power[k].alive=0;
+						LCD_RemovePower(&Power[k]);
+					}
+				}
+			}
+		}
+		*/
 		PlayerMove();
 		if(Player.alive == 1){
 			Print_Char(&Player);
