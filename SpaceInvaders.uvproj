@@ -465,6 +465,11 @@
               <FileType>1</FileType>
               <FilePath>.\PLL.c</FilePath>
             </File>
+            <File>
+              <FileName>Pictures.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Pictures.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
