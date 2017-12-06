@@ -873,11 +873,12 @@ int main(void){
 	ST7735_DrawBitmap(0,160,StartMenu,128,160); // StartMenu
 	while((GPIO_PORTD_DATA_R&0x0F) == 0){
 	}
-	ST7735_DrawBitmap(0,160,three,128,160); // StartMenu
+	ST7735_FillScreen(0); 
+	ST7735_DrawBitmap(56,93,three,16,26); // StartMenu
 	Delay100ms(10);
-	ST7735_DrawBitmap(0,160,two,128,160);
+	ST7735_DrawBitmap(56,93,two,16,26);
 	Delay100ms(10);
-	ST7735_DrawBitmap(0,160,one,128,160); // StartMenu
+	ST7735_DrawBitmap(56,93,one,16,26); // StartMenu
 	Delay100ms(10);
 	ST7735_DrawBitmap(0,160,Map,128,160);
 	scoreboard_init();
@@ -937,6 +938,7 @@ int main(void){
 			Print_Char(&Player);
 		}
 		if(killed == 8){
+			ST7735_FillScreen(0); 
 			while(1){
 				ST7735_DrawBitmap(0,160,WinScreenBright,128,160);
 				Delay100ms(10);
