@@ -123,10 +123,16 @@ Sprite_PlayerDown
 		MINIMUM Y: 19
 		MAX Y: 150
 
-	FOR 16x16
+	FOR 17x16
 	MINIMUM X: 8
-	MAX X: 104
+	MAX X: 103
 	MINIMUM Y:  26
+	MAX Y: 150
+	
+	FOR 4x4
+	MINIMUM: 8
+	MAX: 114
+	MINIMUM Y: 16
 	MAX Y: 150
 
 
@@ -261,15 +267,18 @@ void char_init(){
 	Player.xpos = 50;
 	Player.ypos = 80;
 	Player.height = 16;
-	Player.width = 16;
+	Player.width = 17;
 	Player.images[0] = Sprite_PlayerDown;
+	Player.images[1] = Sprite_PlayerUp;
+	Player.images[2] = Sprite_PlayerRight;
+	Player.images[3] = Sprite_PlayerLeft;
 	Player.destroy = 0;
 }
 void bullet_init(){
 	for(int i = 0; i<10; i++){
 		Bullets[i].image[0] = Sprite_Bullet;
-		Bullets[i].height = 9;
-		Bullets[i].width = 9;
+		Bullets[i].height = 6;
+		Bullets[i].width = 6;
 		Bullets[i].alive = 0;
 		Bullets[i].destroy = 0;
 	}
@@ -279,7 +288,7 @@ void enemy_init(){
 		Enemies[i].alive = 0;
 		Enemies[i].direction = 0;
 		Enemies[i].height = 16;
-		Enemies[i].width = 16;
+		Enemies[i].width = 17;
 		Enemies[i].images[0] = LeftEnemy;
 		Enemies[i].images[1] = RightEnemy;
 		Enemies[i].destroy = 0;
@@ -502,7 +511,7 @@ void Move_Bullets(void){
 	for(int i=0; i<10; i++){
 		if(Bullets[i].alive==1){
 			if(Bullets[i].direction==DOWN){		//down
-				if(Bullets[i].ypos > 148){
+				if(Bullets[i].ypos > 149){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
 				}
@@ -512,7 +521,7 @@ void Move_Bullets(void){
 				}
 			}
 			if(Bullets[i].direction==RIGHT){		//right
-				if(Bullets[i].xpos>109){
+				if(Bullets[i].xpos>113){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
 				}
@@ -522,7 +531,7 @@ void Move_Bullets(void){
 				}
 			}		
 			if(Bullets[i].direction==UP){		//up
-				if(Bullets[i].ypos<21){
+				if(Bullets[i].ypos<19){
 					Bullets[i].alive=0;
 					Bullets[i].destroy = 1;
 				}
@@ -821,31 +830,28 @@ void Input_Joystick(void){
 	ADC_In(Move);
 	ADCStatus = 1;
 }
-/*	
-	FOR 16x16
-	MINIMUM X: 8
-	MAX X: 104
-	MINIMUM Y:  26
-	MAX Y: 150
-*/
 void PlayerMove(void){
 	int move = Input_PlayerMove();
 	if( move == UP){
 		if( Player.ypos <= 150 && Player.ypos > 26){
+			Player.direction = 1;
 			Player.ypos -= speed_n;
 		}
 		if(Player.ypos > 150){
 			Player.ypos = 150;
 		}
 		if(Player.ypos <= 26){
+			Player.direction = 1;
 			Player.ypos = 27;
 		}
 	}
 	if( move == DOWN){
 		if( Player.ypos < 150 && Player.ypos >= 26){
+			Player.direction = 0;
 			Player.ypos += speed_n;
 		}
 		if(Player.ypos >= 150){
+			Player.direction = 0;
 			Player.ypos = 149;
 		}
 		if(Player.ypos < 26){
@@ -853,33 +859,37 @@ void PlayerMove(void){
 		}
 	}
 	if( move == RIGHT){
-		if( Player.xpos >= 8 && Player.xpos < 104){
+		if( Player.xpos >= 8 && Player.xpos < 103){
+			Player.direction = 2;
 			Player.xpos += speed_n;
 		}
-		if(Player.xpos >= 104){
-			Player.xpos = 103;
+		if(Player.xpos >= 103){
+			Player.direction = 2;
+			Player.xpos = 102;
 		}
 		if(Player.xpos < 8){
 			Player.xpos = 8;
 		}
 	}
 	if( move == LEFT){
-		if( Player.xpos > 8 && Player.xpos <= 104){
+		if( Player.xpos > 8 && Player.xpos <= 103){
+			Player.direction = 3;
 			Player.xpos -= speed_n;
 		}
-		if(Player.xpos > 104){
-			Player.xpos = 104;
+		if(Player.xpos > 103){
+			Player.xpos = 103;
 		}
 		if(Player.xpos <= 8){
+			Player.direction = 3;
 			Player.xpos = 9;
 		}
 	}
 	if( move == UPLEFT){
-		if( Player.xpos > 8 && Player.xpos <= 104){
+		if( Player.xpos > 8 && Player.xpos <= 103){
 			Player.xpos -= speed_n;
 		}
-		if(Player.xpos > 104){
-			Player.xpos = 104;
+		if(Player.xpos > 103){
+			Player.xpos = 103;
 		}
 		if(Player.xpos <= 8){
 			Player.xpos = 9;
@@ -895,11 +905,11 @@ void PlayerMove(void){
 		}
 	}
 	if( move == DOWNLEFT){
-		if( Player.xpos > 8 && Player.xpos <= 104){
+		if( Player.xpos > 8 && Player.xpos <= 103){
 			Player.xpos -= speed_n;
 		}
-		if(Player.xpos > 104){
-			Player.xpos = 104;
+		if(Player.xpos > 103){
+			Player.xpos = 103;
 		}
 		if(Player.xpos <= 8){
 			Player.xpos = 9;
@@ -915,11 +925,11 @@ void PlayerMove(void){
 		}
 	}
 	if( move == UPRIGHT){
-		if( Player.xpos >= 8 && Player.xpos < 104){
+		if( Player.xpos >= 8 && Player.xpos < 103){
 			Player.xpos += speed_n;
 		}
-		if(Player.xpos >= 104){
-			Player.xpos = 104;
+		if(Player.xpos >= 103){
+			Player.xpos = 103;
 		}
 		if(Player.xpos < 8){
 			Player.xpos = 8;
@@ -935,11 +945,11 @@ void PlayerMove(void){
 		}
 	}
 	if( move == DOWNRIGHT){
-		if( Player.xpos >= 8 && Player.xpos < 104){
+		if( Player.xpos >= 8 && Player.xpos < 103){
 			Player.xpos += speed_n;
 		}
-		if(Player.xpos >= 104){
-			Player.xpos = 103;
+		if(Player.xpos >= 103){
+			Player.xpos = 102;
 		}
 		if(Player.xpos < 8){
 			Player.xpos = 8;
@@ -1107,17 +1117,10 @@ int main(void){
 	ST7735_DrawBitmap(0,160,Map,128,160);
 	//scoreboard_init();
 	check = 0;
-	Delay100ms(30);
+	Delay100ms(10);
 	
 	
 	while(1){
-		while(1){
-			ST7735_DrawBitmap(50,100,LeftEnemy,16,16);
-			PlayerMove();
-			if(Player.alive == 1){
-				Print_Char(&Player);
-			}
-		}
 		/*
 		Spawn_Timer++;
 		if(Spawn_Timer==Spawn_Set){
